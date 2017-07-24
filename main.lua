@@ -1,5 +1,9 @@
+require("GameLevel")
+require("GameScreen")
+
 levelWidth = love.graphics.getWidth() / 2
 levelHeight = love.graphics.getHeight()
+scrollSpeed = 50
 
 function love.load()
     playerSprite = love.graphics.newImage("resources/images/player.png")
@@ -15,24 +19,25 @@ function love.load()
     }
 
     player = {width = 32, height = 32, speed = 100}
+    screens = {}
 
     startGame()
 end
 
 function startGame()
-    player.xPos = 0
-    player.yPos = 0
+    player.xPos = levelWidth-levelWidth/4 - player.width/2
+    player.yPos = levelHeight/4 - player.height/2
     player.dx = 0
-    player.dy = 0
+    player.dy = -scrollSpeed
     resetStep()
+    screens = generateScreens(10)
+    print(table.getn(screens))
 end
 
 function love.draw()
-    love.graphics.setColor(200, 200, 255, 255)
-    love.graphics.rectangle("fill", 0, 0, levelWidth, levelHeight)
-    love.graphics.setColor(255, 200, 255, 255)
-    love.graphics.rectangle("fill", levelWidth, 0, levelWidth * 2, levelHeight)
-    love.graphics.setColor(255, 255, 255, 255)
+    for i = 1, table.getn(screens) do
+        screens[i]:draw()
+    end
     love.graphics.draw(playerSprite, walkingFrames[currentFrame], player.xPos, player.yPos, 0, 1, 1)
 end
 
@@ -40,6 +45,10 @@ function love.update(dt)
     directions = getInput()
     updatePlayer(directions, dt)
     movePlayer(dt)
+
+    for i = 1, table.getn(screens) do
+        screens[i]:update(dt)
+    end
 end
 
 function getInput(dt)
@@ -53,7 +62,7 @@ end
 
 function updatePlayer(directions, dt)
     player.dx = 0
-    player.dy = 0
+    player.dy = -scrollSpeed
     if not (directions["up"] or directions["left"] or directions["down"] or directions["right"]) then
         resetStep()
         return
@@ -66,7 +75,7 @@ function updatePlayer(directions, dt)
 
     if directions["down"] and player.yPos<levelHeight-player.height then
         player.dy = speed
-    elseif up and player.yPos>0 then
+    elseif up then
         player.dy = -speed
     end
 
@@ -108,5 +117,9 @@ end
 function movePlayer(dt)
     player.xPos = player.xPos + player.dx * dt
     player.yPos = player.yPos + player.dy * dt
+
+    if player.yPos < 0 then
+        startGame()
+    end
 end
 
