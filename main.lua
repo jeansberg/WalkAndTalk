@@ -3,7 +3,6 @@ require("GameScreen")
 
 levelWidth = love.graphics.getWidth() / 2
 levelHeight = love.graphics.getHeight()
-scrollSpeed = 100
 
 function love.load()
     playerSprite = love.graphics.newImage("resources/images/player.png")
@@ -25,12 +24,13 @@ function love.load()
 end
 
 function startGame()
+    scrollSpeed = 100
     player.xPos = levelWidth-levelWidth/4 - player.width/2
     player.yPos = levelHeight/4 - player.height/2
     player.dx = 0
     player.dy = -scrollSpeed
     resetStep()
-    screens = generateScreens(10)
+    screens = generateScreens(2)
 end
 
 function love.draw()
@@ -45,7 +45,7 @@ function love.update(dt)
     updatePlayer(directions, dt)
     movePlayer(dt)
 
-    if screens[10].position <= 0 then
+    if screens[table.getn(screens)].position <= 0 then
         scrollSpeed = 0
         return
     end
@@ -130,6 +130,10 @@ function movePlayer(dt)
     end
 
     if player.yPos < 0 then
+        startGame()
+    end
+
+    if player.yPos >= levelHeight -player.height and scrollSpeed == 0 then
         startGame()
     end
 end
