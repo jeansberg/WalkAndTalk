@@ -22,3 +22,13 @@ function GameScreen:draw()
     love.graphics.draw(self.left, xOffset, self.position, 0, scale, 1)
     love.graphics.draw(self.right, levelWidth/2 + xOffset, self.position, 0, scale, 1)
 end
+
+function GameScreen:getWall()
+    if self.layout == "left" then
+        return {xPos = levelWidth/2, yPos = self.position, width = 200, height = 600}
+    elseif self.layout == "right" then
+        return {xPos = 0, yPos = self.position, width = 200, height = 600}
+    else
+        return nil
+    end
+end

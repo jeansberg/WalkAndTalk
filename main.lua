@@ -18,7 +18,7 @@ function love.load()
         love.graphics.newQuad(frameSide, frameSide + 2, frameSide, frameSide, imageWidth, imageHeight)
     }
 
-    player = {width = 32, height = 32, speed = 100}
+    player = {width = 32, height = 32, speed = 120}
     screens = {}
 
     startGame()
@@ -37,13 +37,18 @@ function love.draw()
     for i = 1, table.getn(screens) do
         screens[i]:draw()
     end
-    love.graphics.draw(playerSprite, walkingFrames[currentFrame], player.xPos, player.yPos, 0, 1, 1)
+    love.graphics.draw(playerSprite, walkingFrames[currentFrame], player.xPos, player.yPos)
 end
 
 function love.update(dt)
     directions = getInput()
     updatePlayer(directions, dt)
     movePlayer(dt)
+
+    if screens[10].position <= 0 then
+        scrollSpeed = 0
+        return
+    end
 
     for i = 1, table.getn(screens) do
         screens[i]:update(dt)
@@ -117,8 +122,45 @@ function movePlayer(dt)
     player.xPos = player.xPos + player.dx * dt
     player.yPos = player.yPos + player.dy * dt
 
+    for i = 1, table.getn(screens) do
+        if checkCollision(player, screens[i]:getWall()) then
+            resolveWallCollision(player, screens[i]:getWall())
+            break
+        end
+    end
+
     if player.yPos < 0 then
         startGame()
     end
 end
 
+function checkCollision(player, wall)
+    if not (player and wall) then
+        return false
+    end
+
+    if  player.xPos < wall.xPos and player.xPos + player.width > wall.xPos and
+        player.yPos > wall.yPos and player.yPos + player.height < wall.yPos + wall.height then
+            print("Collide")
+        return true
+    elseif wall.xPos < player.xPos and wall.xPos + wall.width > player.xPos and
+            wall.yPos < player.yPos and wall.yPos + wall.height > player.yPos then
+        return true
+    else
+        return false
+    end
+end
+
+function resolveWallCollision(player, wall)
+    if player.dx > 0 then
+        player.xPos = wall.xPos - player.width
+    elseif player.dx < 0 then
+        player.xPos = wall.xPos + wall.width
+    end
+
+    if player.dy > scrollSpeed then
+        player.yPos = wall.yPos - player.height
+    elseif player.dy < -scrollSpeed then
+        player.yPos = wall.yPos + wall.height
+    end
+end

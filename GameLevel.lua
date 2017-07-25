@@ -29,8 +29,8 @@ function generateScreens(numScreens)
             end
         end
         print(layout)
-        leftImage, rightImage = getImages(layout)
-        screens[i] = GameScreen:new{position = (i - 1)*600, left = leftImage, right = rightImage, flipped = flipped}
+        left, right = getImages(layout)
+        screens[i] = GameScreen:new{position = (i - 1)*600, left = left, right = right, flipped = flipped, layout = layout}
     end
 
     return screens
