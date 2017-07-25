@@ -14,10 +14,11 @@ end
 function GameScreen:draw()
     if self.flipped then
         scale = - 1
+        xOffset = 200
     else
-        scale = 0
+        scale = 1
+        xOffset = 0
     end
-
-    love.graphics.draw(self.left, 0, self.position, 0, scale)
-    love.graphics.draw(self.right, levelWidth/2, self.position, 0, scale)
+    love.graphics.draw(self.left, xOffset, self.position, 0, scale, 1)
+    love.graphics.draw(self.right, levelWidth/2 + xOffset, self.position, 0, scale, 1)
 end

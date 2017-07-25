@@ -22,14 +22,15 @@ function generateScreens(numScreens)
                     layout = "leftToRight"
                 end
             elseif layout == "leftToRight" then
-                flipped = true
                 layout = "right"
             elseif layout == "rightToLeft" then
+                flipped = true
                 layout = "left"
             end
         end
-        left, right = getImages(layout)
-        screens[i] = GameScreen:new{position = 0, left = left, right = right, flipped = flipped}
+        print(layout)
+        leftImage, rightImage = getImages(layout)
+        screens[i] = GameScreen:new{position = (i - 1)*600, left = leftImage, right = rightImage, flipped = flipped}
     end
 
     return screens
