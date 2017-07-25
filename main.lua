@@ -30,7 +30,7 @@ function startGame()
     player.dx = 0
     player.dy = -scrollSpeed
     resetStep()
-    screens = generateScreens(2)
+    screens = generateScreens(5)
 end
 
 function love.draw()
