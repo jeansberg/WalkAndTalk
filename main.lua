@@ -59,7 +59,12 @@ end
 
 function updatePlayer(directions, dt)
     player.dx = 0
-    player.dy = -scrollSpeed
+
+    if scrolling then
+        player.dy = -scrollSpeed
+    else
+        player.dy = 0
+    end
 
     up, left, down, right = directions["up"], directions["left"], directions["down"], directions["right"]
 
