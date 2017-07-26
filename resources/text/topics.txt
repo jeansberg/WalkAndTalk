@@ -1,0 +1,13 @@
+Isn't it nice out today?;It sure is.;fillerAllowed
+I saw my dad yesterday afternoon.;Oh, that's good. You don't see him often.;fillerAllowed
+My parents had a big fight last week.;That's a shame. They normally get along so well.;fillerAllowed
+I think my mom and dad really do love each other.;Just like I love you.;fillerAllowed
+My mom got a new haircut.;I just hope she didn't get it dyed pink again!;fillerAllowed
+Didn't my mom look awful when she had that pink hair?;Yeah, she did.;fillerAllowed
+I just love this time of year, don't you?;I really do.;fillerAllowed
+Work was really rough last week.;Trouble in the office again? Poor thing.;fillerAllowed
+My boss is such a jerk.;I agree. He should appreciate your work more.;;fillerAllowed
+I'm thinking of reducing my hours in the office.;That's fair. You can work at home, too.;fillerAllowed
+What do you think of my haircut?;I think it looks wonderful.
+How long have your parents been married now?;Almost thirty years.
+How would you tell your boss you want to change your schedule?;I'd just be direct and honest.
