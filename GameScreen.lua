@@ -1,3 +1,13 @@
+-- Package: gameScreen
+-- This package contains the GameScreen type which represents a part of a level
+local P = {}
+gameScreen = P
+
+-- Imports
+local love = love
+local setmetatable = setmetatable
+setfenv(1, P)
+
 GameScreen = {}
 
 function GameScreen:new (o)
@@ -7,7 +17,7 @@ function GameScreen:new (o)
   return o
 end
 
-function GameScreen:update(dt)
+function GameScreen:update(scrollSpeed, dt)
     self.position = self.position - scrollSpeed * dt
 end
 
@@ -20,12 +30,12 @@ function GameScreen:draw()
         xOffset = 0
     end
     love.graphics.draw(self.left, xOffset, self.position, 0, scale, 1)
-    love.graphics.draw(self.right, levelWidth/2 + xOffset, self.position, 0, scale, 1)
+    love.graphics.draw(self.right, self.width/2 + xOffset, self.position, 0, scale, 1)
 end
 
 function GameScreen:getWall()
     if self.layout == "left" then
-        return {xPos = levelWidth/2, yPos = self.position, width = 200, height = 600}
+        return {xPos = self.width/2, yPos = self.position, width = 200, height = 600}
     elseif self.layout == "right" then
         return {xPos = 0, yPos = self.position, width = 200, height = 600}
     else

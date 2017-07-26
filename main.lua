@@ -1,13 +1,17 @@
-require("GameLevel")
-require("GameScreen")
+require "gameLevel"
+require "gameScreen"
+require "input"
+require "collisions"
 
-levelWidth = love.graphics.getWidth() / 2
-levelHeight = love.graphics.getHeight()
+walkingScreenWidth = love.graphics.getWidth() / 2
+walkingScreenHeight = love.graphics.getHeight()
+frameSide = 32
+frameHeight = 32
+playerSpeed = 120
+scrollSpeed = 100
 
 function love.load()
     playerSprite = love.graphics.newImage("resources/images/player.png")
-    frameSide = 32
-    frameHeight = 32
     imageWidth = playerSprite:getWidth()
     imageHeight = playerSprite:getHeight()
 
@@ -17,20 +21,18 @@ function love.load()
         love.graphics.newQuad(frameSide, frameSide + 2, frameSide, frameSide, imageWidth, imageHeight)
     }
 
-    player = {width = 32, height = 32, speed = 120}
+    player = {width = 32, height = 32, speed = playerSpeed}
     screens = {}
 
     startGame()
 end
 
 function startGame()
-    scrollSpeed = 100
-    player.xPos = levelWidth-levelWidth/4 - player.width/2
-    player.yPos = levelHeight/4 - player.height/2
-    player.dx = 0
-    player.dy = -scrollSpeed
+    scrolling = true
+    player.xPos = 3/4 * walkingScreenWidth - player.width/2
+    player.yPos = walkingScreenHeight/4 - player.height/2
     resetStep()
-    screens = generateScreens(5)
+    screens = gameLevel.generateScreens(5, walkingScreenWidth, walkingScreenHeight)
 end
 
 function love.draw()
@@ -41,49 +43,48 @@ function love.draw()
 end
 
 function love.update(dt)
-    directions = getInput()
+    local directions = input.getMovementInput()
     updatePlayer(directions, dt)
     movePlayer(dt)
 
     if screens[table.getn(screens)].position <= 0 then
-        scrollSpeed = 0
+        scrolling = false
         return
     end
 
     for i = 1, table.getn(screens) do
-        screens[i]:update(dt)
+        screens[i]:update(scrollSpeed, dt)
     end
-end
-
-function getInput(dt)
-    up = love.keyboard.isDown("w")
-    left = love.keyboard.isDown("a")
-    down = love.keyboard.isDown("s")
-    right = love.keyboard.isDown("d")
-
-    return {up=up, left=left, down=down, right=right}
 end
 
 function updatePlayer(directions, dt)
     player.dx = 0
-    player.dy = -scrollSpeed
-    if not (directions["up"] or directions["left"] or directions["down"] or directions["right"]) then
+
+    if scrolling then
+        player.dy = -scrollSpeed
+    else
+        player.dy = 0
+    end
+
+    up, left, down, right = directions["up"], directions["left"], directions["down"], directions["right"]
+
+    if not (up or left or down or right) then
         resetStep()
         return
     end
 
-    speed = player.speed
+    local speed = player.speed
     if((down or up) and (left or right)) then
         speed = speed / math.sqrt(2)
     end
 
-    if directions["down"] and player.yPos<levelHeight-player.height then
+    if down and player.yPos<walkingScreenHeight-player.height then
         player.dy = speed
     elseif up then
         player.dy = -speed
     end
 
-    if right and player.xPos<levelWidth-player.width then
+    if right and player.xPos<walkingScreenWidth-player.width then
         player.dx = speed
     elseif left and player.xPos>0 then
         player.dx = -speed
@@ -123,8 +124,8 @@ function movePlayer(dt)
     player.yPos = player.yPos + player.dy * dt
 
     for i = 1, table.getn(screens) do
-        if checkCollision(player, screens[i]:getWall()) then
-            resolveWallCollision(player, screens[i]:getWall())
+        if collisions.checkCollision(player, screens[i]:getWall()) then
+            collisions.resolveWallCollision(player, screens[i]:getWall(), scrollSpeed)
             break
         end
     end
@@ -133,38 +134,7 @@ function movePlayer(dt)
         startGame()
     end
 
-    if player.yPos >= levelHeight -player.height and scrollSpeed == 0 then
+    if player.yPos >= walkingScreenHeight -player.height and not scrolling then
         startGame()
-    end
-end
-
-function checkCollision(player, wall)
-    if not (player and wall) then
-        return false
-    end
-
-    if  player.xPos < wall.xPos and player.xPos + player.width > wall.xPos and
-        player.yPos > wall.yPos and player.yPos + player.height < wall.yPos + wall.height then
-            print("Collide")
-        return true
-    elseif wall.xPos < player.xPos and wall.xPos + wall.width > player.xPos and
-            wall.yPos < player.yPos and wall.yPos + wall.height > player.yPos then
-        return true
-    else
-        return false
-    end
-end
-
-function resolveWallCollision(player, wall)
-    if player.dx > 0 then
-        player.xPos = wall.xPos - player.width
-    elseif player.dx < 0 then
-        player.xPos = wall.xPos + wall.width
-    end
-
-    if player.dy > scrollSpeed then
-        player.yPos = wall.yPos - player.height
-    elseif player.dy < -scrollSpeed then
-        player.yPos = wall.yPos + wall.height
     end
 end

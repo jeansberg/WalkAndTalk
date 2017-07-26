@@ -1,6 +1,15 @@
-require "GameScreen"
+-- Package: gameLevel
+-- This package contains functions for generating a level made up of GameScreen objects
+require "gameScreen"
+local P = {}
+gameLevel = P
 
-function generateScreens(numScreens)
+-- Imports
+local love = love
+local gameScreen = gameScreen
+setfenv(1, P)
+
+function generateScreens(numScreens, width, height)
     local screens = {}
 
     for i = 1, numScreens do
@@ -9,7 +18,7 @@ function generateScreens(numScreens)
             -- Always start with a layout walkable on the right side
             layout = "right"
         else
-            -- Add a compatible layout
+            -- Add a layout compatible with the last one
             if layout == "right" then 
                 coin = love.math.random(0, 1)
                 if coin == 1 then
@@ -28,9 +37,8 @@ function generateScreens(numScreens)
                 layout = "left"
             end
         end
-        print(layout)
         left, right = getImages(layout)
-        screens[i] = GameScreen:new{position = (i - 1)*600, left = left, right = right, flipped = flipped, layout = layout}
+        screens[i] = gameScreen.GameScreen:new{width = width, height = height, position = (i - 1)*600, left = left, right = right, flipped = flipped, layout = layout}
     end
 
     return screens
