@@ -1,5 +1,5 @@
--- Package: gameLevel
--- This package contains functions for generating a level made up of GameScreen objects
+-- Package: gameLevel.
+-- This package contains functions for generating a level made up of GameScreen objects.
 require "gameScreen"
 local P = {}
 gameLevel = P

@@ -1,4 +1,4 @@
--- Package: "input"
+-- Package: input
 -- This package contains functions for getting player input using love.keyboard
 local P = {}
 input = P
@@ -14,4 +14,22 @@ function getMovementInput()
     local right = love.keyboard.isDown("d")
 
     return {up=up, left=left, down=down, right=right}
+end
+
+
+function love.keypressed(key)
+    if key == "down" or key == "up" or key == "left" or key == "right" then
+        lastKey = key
+   end
+end
+
+function getConversationInput()
+    local returnKey
+    if lastKey then
+        returnKey = lastKey
+        lastKey = nil
+        return returnKey
+    end
+
+    return nil
 end

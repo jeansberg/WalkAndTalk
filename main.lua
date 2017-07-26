@@ -2,6 +2,7 @@ require "gameLevel"
 require "gameScreen"
 require "input"
 require "collisions"
+require "conversation"
 
 walkingScreenWidth = love.graphics.getWidth() / 2
 walkingScreenHeight = love.graphics.getHeight()
@@ -24,6 +25,7 @@ function love.load()
     player = {width = 32, height = 32, speed = playerSpeed}
     screens = {}
 
+    conversation.init(5)
     startGame()
 end
 
@@ -40,9 +42,12 @@ function love.draw()
         screens[i]:draw()
     end
     love.graphics.draw(playerSprite, walkingFrames[currentFrame], player.xPos, player.yPos)
+
+    conversation.draw()
 end
 
 function love.update(dt)
+    conversation.update(dt)
     local directions = input.getMovementInput()
     updatePlayer(directions, dt)
     movePlayer(dt)
