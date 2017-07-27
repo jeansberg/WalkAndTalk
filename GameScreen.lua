@@ -1,5 +1,5 @@
--- Package: gameScreen
--- This package contains the GameScreen type which represents a part of a level
+-- Package: gameScreen.
+-- This package contains the GameScreen type which represents a part of a level.
 local P = {}
 gameScreen = P
 
