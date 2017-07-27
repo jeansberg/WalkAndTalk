@@ -77,6 +77,7 @@ function update(dt)
         topPosition = ""
         rightPosition = ""
         leftPosition = ""
+        comment = ""
 
         love.graphics.setColor(0, 0, 0, 255)
         love.graphics.rectangle("fill", 400, 0, 400, 600)
@@ -121,6 +122,7 @@ function updateTopic()
     topic = generateTopic()
     local answers = {topic["answer"], topic["wrongAnswer1"], topic["wrongAnswer2"]}
     
+    comment = topic["comment"]
     topPosition = popRandom(answers)
     rightPosition = popRandom(answers)
     bottomPosition = answers[1]
@@ -148,7 +150,7 @@ end
 -------------------------------------
 function draw()
     if topic then
-        love.graphics.printf(topic["comment"], 500, 50, 200)
+        love.graphics.printf(comment, 500, 50, 200)
 
         love.graphics.printf(topPosition, 510, 200, 180)
         love.graphics.printf(rightPosition, 610, 300, 180)
