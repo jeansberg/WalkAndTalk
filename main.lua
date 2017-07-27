@@ -30,6 +30,7 @@ function love.load()
 end
 
 function startGame()
+    conversation.reset()
     scrolling = true
     player.xPos = 3/4 * walkingScreenWidth - player.width/2
     player.yPos = walkingScreenHeight/4 - player.height/2
@@ -47,7 +48,12 @@ function love.draw()
 end
 
 function love.update(dt)
-    conversation.update(dt)
+    success = conversation.update(dt)
+
+    if not success then
+        startGame()
+    end
+
     local directions = input.getMovementInput()
     updatePlayer(directions, dt)
     movePlayer(dt)
