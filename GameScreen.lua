@@ -18,7 +18,7 @@ function GameScreen:new (o)
 end
 
 function GameScreen:update(scrollSpeed, dt)
-    self.position = self.position - scrollSpeed * dt
+    self.yPos = self.yPos - scrollSpeed * dt
 end
 
 function GameScreen:draw()
@@ -33,11 +33,14 @@ function GameScreen:draw()
         scale = 1
         xOffset = 0
     end
-    love.graphics.draw(self.left, xOffset, self.position, 0, scale, 1)
-    love.graphics.draw(self.right, self.width/2 + xOffset, self.position, 0, scale, 1)
+    love.graphics.draw(self.left, xOffset, self.yPos, 0, scale, 1)
+    love.graphics.draw(self.right, self.width/2 + xOffset, self.yPos, 0, scale, 1)
 end
 
-function GameScreen:getWall()
+function GameScreen:getDimensions()
+
+    
+--[[
     if self.layout == "left" then
         return {xPos = self.width/2, yPos = self.position, width = 200, height = 600}
     elseif self.layout == "right" then
@@ -47,4 +50,5 @@ function GameScreen:getWall()
     else
         return nil
     end
+    ]]
 end

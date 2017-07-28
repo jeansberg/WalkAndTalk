@@ -6,35 +6,48 @@ require "conversation"
 
 walkingScreenWidth = love.graphics.getWidth() / 2
 screenHeight = love.graphics.getHeight()
-frameSide = 32
-frameHeight = 32
 playerSpeed = 120
+friendSpeed = 100
 scrollSpeed = 100
-numScreens = 2
+numScreens = 5
 
 function love.load()
     playerSprite = love.graphics.newImage("resources/images/player.png")
+    friendSprite = love.graphics.newImage("resources/images/friend.png")
     imageWidth = playerSprite:getWidth()
     imageHeight = playerSprite:getHeight()
+    local frameSide = 32
 
-    walkingFrames = {
-        love.graphics.newQuad(0, 0, frameSide, frameSide, imageWidth, imageHeight),
-        love.graphics.newQuad(0, frameSide + 2, frameSide, frameSide, imageWidth, imageHeight),
-        love.graphics.newQuad(frameSide, frameSide + 2, frameSide, frameSide, imageWidth, imageHeight)
-    }
+    local playerFrames = getFrames(playerSprite, imageWidth, imageHeight, frameSide, 3)
+    local friendFrames = getFrames(friendSprite, imageWidth, imageHeight, frameSide, 3)
 
-    player = {width = 32, height = 32, speed = playerSpeed}
+    player = {width = 32, height = 32, speed = playerSpeed, img = playerSprite, frames = playerFrames}
+    friend = {width = 32, height = 32, speed = friendSpeed, img = friendSprite, frames = friendFrames}
     screens = {}
 
     conversation.init(5)
     startGame()
 end
 
+function getFrames(img, imgWidth, imgHeight, frameSide, numFrames)
+    local frames = {}
+    
+    local rowCount = imgWidth / frameSide
+    local colCount = imgHeight / frameSide
+    for r = 0, rowCount-1 do
+        for c = 0, colCount-1 do 
+            table.insert(frames, love.graphics.newQuad(c * frameSide, r * frameSide, frameSide, frameSide, imgWidth, imgHeight))
+        end
+    end
+
+    return frames
+end
+
 function startGame()
     conversation.reset()
-    player.xPos = 3/4 * walkingScreenWidth - player.width/2
+    player.xPos = 3/4 * walkingScreenWidth - player.width * 2
     player.yPos = screenHeight/4 - player.height/2
-    resetStep()
+    resetStep(player)
     screens = gameLevel.generateScreens(numScreens, walkingScreenWidth, screenHeight)
 end
 
@@ -42,7 +55,8 @@ function love.draw()
     for i = 1, table.getn(screens) do
         screens[i]:draw()
     end
-    love.graphics.draw(playerSprite, walkingFrames[currentFrame], player.xPos, player.yPos)
+    love.graphics.draw(player.img, player.frames[player.currentFrame], player.xPos, player.yPos)
+    love.graphics.draw(friend.img, friend.frames[friend.currentFrame], friend.xPos, friend.yPos)
 
     conversation.draw()
 end
@@ -54,23 +68,23 @@ function love.update(dt)
         startGame()
     end
 
-    local directions = input.getMovementInput()
-    updatePlayer(directions, dt)
-    movePlayer(dt)
+    updateCharacter(player, dt, input.getMovementInput)
+    moveCharacter(player, dt)
 
     for i = 1, table.getn(screens) do
         screens[i]:update(scrollSpeed, dt)
     end
 end
 
-function updatePlayer(directions, dt)
+function updateCharacter(directions, dt, getDirections)
     player.dx = 0
     player.dy = -scrollSpeed
+    directions = getDirections()
 
     up, left, down, right = directions["up"], directions["left"], directions["down"], directions["right"]
 
     if not (up or left or down or right) then
-        resetStep()
+        resetStep(player)
         return
     end
 
@@ -91,51 +105,64 @@ function updatePlayer(directions, dt)
         player.dx = -speed
     end
 
-    updateStep(dt)
+    updateStep(player, dt)
 end
 
-function resetStep()
-    currentFrame = 1
-    stepTimer = 0
+function resetStep(char)
+    char.currentFrame = 1
+    char.stepTimer = 0
 end
 
-function updateStep(dt)
-    if currentFrame == 1 then
-        currentFrame = 2
+function updateStep(char, dt)
+    if char.currentFrame == 1 then
+        char.currentFrame = 2
     end
 
-    if stepTimer < 0.2 then
-        stepTimer = stepTimer + dt
+    if char.stepTimer < 0.2 then
+        char.stepTimer = char.stepTimer + dt
     else
-        toggleFrame(dt)
-        stepTimer = 0
+        toggleFrame(char, dt)
+        char.stepTimer = 0
     end
 end
 
-function toggleFrame()
-    if currentFrame == 2 or currentFrame == 1 then
-        currentFrame = 3
+function toggleFrame(char)
+    if char.currentFrame == 2 or char.currentFrame == 1 then
+        char.currentFrame = 3
     else
-        currentFrame = 2
+        char.currentFrame = 2
     end
 end
 
-function movePlayer(dt)
-    player.xPos = player.xPos + player.dx * dt
-    player.yPos = player.yPos + player.dy * dt
+function moveCharacter(char, dt)
+    char.xPos = char.xPos + char.dx * dt
+    char.yPos = char.yPos + char.dy * dt
 
     for i = 1, table.getn(screens) do
-        if collisions.checkCollision(player, screens[i]:getWall()) then
-            if screens[i].layout == "finish" then
+        local screen = screens[i]
+        if collisions.checkOverlap(char, screen) then
+            if screen.layout == "finish" then
                 startGame()
             end
 
-            collisions.resolveWallCollision(player, screens[i]:getWall(), scrollSpeed)
+            local wall = {}
+            if screen.layout == "right" and char.xPos < 200 then
+                wall = {xPos=screen.xPos, yPos=screen.yPos, width = 200, height = 600}
+                collisions.resolveWallCollision(char, wall, scrollSpeed)
+            elseif screen.layout == "left" and char.xPos >= 200 - char.width then
+                wall = {xPos=screen.xPos + 200, yPos=screen.yPos, width = 200, height = 600}
+                collisions.resolveWallCollision(char, wall, scrollSpeed)
+            end
+
             break
         end
     end
 
-    if player.yPos + player.height > table.getn(screens) * screenHeight then
+    if char.yPos < 0 then
         startGame()
     end
+end
+
+function getFriendDirections()
+
 end
