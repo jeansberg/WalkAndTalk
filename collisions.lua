@@ -19,6 +19,7 @@ function checkOverlap(rect1, rect2)
         ((rect1.yPos < rect2.yPos and rect1.yPos + rect1.height > rect2.yPos) or 
         (rect1.yPos > rect2.yPos and rect1.yPos + rect1.height < rect2.yPos + rect2.width) or
         (rect1.yPos < rect2.yPos + rect2.height and rect1.yPos + rect2.height > rect2.yPos + rect2.height)) then
+
         return true
     else
         return false
@@ -41,5 +42,5 @@ print("resolving")
         rect1.yPos = rect1.yPos - movedY
     elseif rect1.dy < -scrollSpeed then
         rect1.yPos = rect1.yPos - movedY
-    end
+  end
 end

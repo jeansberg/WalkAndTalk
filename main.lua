@@ -38,16 +38,33 @@ function love.load()
 
     player = character.Character:new{xPos = playerStartX, yPos = playerStartY, speed = playerSpeed, animations = playerAnimations   , frames = playerFrames, image = playerImage}
     friend = character.Character:new{xPos = friendStartX, yPos = friendStartY, speed = friendSpeed, animations = friendAnimations, frames = friendFrames, image = friendImage}
+
+
     screens = {}
 
     conversation.init(5)
     startGame()
 end
 
+function getFrames(img, imgWidth, imgHeight, frameSide, numFrames)
+    local frames = {}
+    
+    local rowCount = imgWidth / frameSide
+    local colCount = imgHeight / frameSide
+    for r = 0, rowCount-1 do
+        for c = 0, colCount-1 do 
+            table.insert(frames, love.graphics.newQuad(c * frameSide, r * frameSide, frameSide, frameSide, imgWidth, imgHeight))
+        end
+    end
+
+    return frames
+end
+
 function startGame()
     conversation.reset()
     player:reset()
     friend:reset()
+
     screens = gameLevel.generateScreens(numScreens, walkingScreenWidth, screenHeight)
 end
 
@@ -59,6 +76,7 @@ function love.draw()
     --print(#player.frames)
     love.graphics.draw(player.image, player.frames[player.animations[player.currentAnimation].currentFrame], player.xPos, player.yPos)
     --love.graphics.draw(friend.image, friend.frames[friend.animations[friend.currentAnimation].currentFrame], friend.xPos, friend.yPos)
+
 
     conversation.draw()
 end
