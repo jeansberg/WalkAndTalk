@@ -15,6 +15,8 @@ local string = string
 local print = print
 local input = input
 local type = type
+local math = math
+local os = os
 setfenv(1, P)
 
 -- Constants
@@ -62,6 +64,7 @@ end
 -- Resets the conversation engine.
 -------------------------------------
 function reset()
+    math.randomseed(os.time())
     failures = 0
     timer = topicRate
     remainingTopics = deepcopy(topics)
@@ -73,16 +76,7 @@ end
 -------------------------------------
 function update(dt)
     if table.getn(remainingTopics) == 0 then
-        bottomPosition = ""
-        topPosition = ""
-        rightPosition = ""
-        leftPosition = ""
-        comment = ""
-
-        love.graphics.setColor(0, 0, 0, 255)
-        love.graphics.rectangle("fill", 400, 0, 400, 600)
-        love.graphics.setColor(255, 255, 255, 255)
-        return true
+        remainingTopics = deepcopy(topics)
     end
 
     if timer > 0 then
@@ -163,7 +157,7 @@ end
 -- Returns a new Topic instance from the remaining topics list.
 -------------------------------------
 function generateTopic()
-    local index = love.math.random(1, table.getn(remainingTopics))
+    local index = math.random(1, table.getn(remainingTopics))
     local newTopic = remainingTopics[index]
     local fillerAnswer = fillerAnswers[love.math.random(1, table.getn(fillerAnswers))]
     local wrongAnswer1 = getNewAnswer({newTopic["answer"]})
