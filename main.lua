@@ -5,11 +5,12 @@ require "collisions"
 require "conversation"
 
 walkingScreenWidth = love.graphics.getWidth() / 2
-walkingScreenHeight = love.graphics.getHeight()
+screenHeight = love.graphics.getHeight()
 frameSide = 32
 frameHeight = 32
 playerSpeed = 120
 scrollSpeed = 100
+numScreens = 2
 
 function love.load()
     playerSprite = love.graphics.newImage("resources/images/player.png")
@@ -31,11 +32,10 @@ end
 
 function startGame()
     conversation.reset()
-    scrolling = true
     player.xPos = 3/4 * walkingScreenWidth - player.width/2
-    player.yPos = walkingScreenHeight/4 - player.height/2
+    player.yPos = screenHeight/4 - player.height/2
     resetStep()
-    screens = gameLevel.generateScreens(5, walkingScreenWidth, walkingScreenHeight)
+    screens = gameLevel.generateScreens(numScreens, walkingScreenWidth, screenHeight)
 end
 
 function love.draw()
@@ -58,11 +58,6 @@ function love.update(dt)
     updatePlayer(directions, dt)
     movePlayer(dt)
 
-    if screens[table.getn(screens)].position <= 0 then
-        scrolling = false
-        return
-    end
-
     for i = 1, table.getn(screens) do
         screens[i]:update(scrollSpeed, dt)
     end
@@ -70,12 +65,7 @@ end
 
 function updatePlayer(directions, dt)
     player.dx = 0
-
-    if scrolling then
-        player.dy = -scrollSpeed
-    else
-        player.dy = 0
-    end
+    player.dy = -scrollSpeed
 
     up, left, down, right = directions["up"], directions["left"], directions["down"], directions["right"]
 
@@ -89,7 +79,7 @@ function updatePlayer(directions, dt)
         speed = speed / math.sqrt(2)
     end
 
-    if down and player.yPos<walkingScreenHeight-player.height then
+    if down and player.yPos<screenHeight-player.height then
         player.dy = speed
     elseif up then
         player.dy = -speed
@@ -136,16 +126,16 @@ function movePlayer(dt)
 
     for i = 1, table.getn(screens) do
         if collisions.checkCollision(player, screens[i]:getWall()) then
+            if screens[i].layout == "finish" then
+                startGame()
+            end
+
             collisions.resolveWallCollision(player, screens[i]:getWall(), scrollSpeed)
             break
         end
     end
 
-    if player.yPos < 0 then
-        startGame()
-    end
-
-    if player.yPos >= walkingScreenHeight -player.height and not scrolling then
+    if player.yPos + player.height > table.getn(screens) * screenHeight then
         startGame()
     end
 end

@@ -22,6 +22,10 @@ function GameScreen:update(scrollSpeed, dt)
 end
 
 function GameScreen:draw()
+    if self.left == nil then
+        return
+    end
+
     if self.flipped then
         scale = - 1
         xOffset = 200
@@ -38,6 +42,8 @@ function GameScreen:getWall()
         return {xPos = self.width/2, yPos = self.position, width = 200, height = 600}
     elseif self.layout == "right" then
         return {xPos = 0, yPos = self.position, width = 200, height = 600}
+    elseif self.layout == "finish" then
+        return {xPos = 0, yPos = self.position, width = 400, height = 600}
     else
         return nil
     end
