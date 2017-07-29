@@ -10,7 +10,7 @@ frameSide = 32
 frameHeight = 32
 playerSpeed = 120
 scrollSpeed = 100
-numScreens = 2
+numScreens = 10
 
 function love.load()
     playerSprite = love.graphics.newImage("resources/images/player.png")
