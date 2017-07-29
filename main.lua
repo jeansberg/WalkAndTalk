@@ -22,6 +22,7 @@ friendStartX = 3/4 * walkingScreenWidth - frameSide
 friendStartY = screenHeight/4
 
 
+
 function love.load()
     playerImage = love.graphics.newImage("resources/images/player.png")
     friendImage = love.graphics.newImage("resources/images/friend.png")
