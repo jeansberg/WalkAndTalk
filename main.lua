@@ -3,51 +3,48 @@ require "gameScreen"
 require "input"
 require "collisions"
 require "conversation"
+require "character"
 
+
+-----------------------------------------------------------------------------------------------------------------------
+-- Constants
+-----------------------------------------------------------------------------------------------------------------------
 walkingScreenWidth = love.graphics.getWidth() / 2
 screenHeight = love.graphics.getHeight()
 playerSpeed = 120
 friendSpeed = 100
 scrollSpeed = 100
 numScreens = 5
+frameSide = 32
+playerStartX = 3/4 * walkingScreenWidth - frameSide * 2
+playerStartY = screenHeight/4 - frameSide / 2
+friendStartX = 3/4 * walkingScreenWidth
+friendStartY = screenHeight/4
+
 
 function love.load()
-    playerSprite = love.graphics.newImage("resources/images/player.png")
-    friendSprite = love.graphics.newImage("resources/images/friend.png")
-    imageWidth = playerSprite:getWidth()
-    imageHeight = playerSprite:getHeight()
-    local frameSide = 32
+    playerImage = love.graphics.newImage("resources/images/player.png")
+    friendImage = love.graphics.newImage("resources/images/friend.png")
+    imageWidth = playerImage:getWidth()
+    imageHeight = playerImage:getHeight()
 
-    local playerFrames = getFrames(playerSprite, imageWidth, imageHeight, frameSide, 3)
-    local friendFrames = getFrames(friendSprite, imageWidth, imageHeight, frameSide, 3)
+    local playerFrames = spriteSheet.SpriteSheet:new{imageWidth = imageWidth, imageHeight = imageHeight, frameSide = frameSide, numFrames = 3}
+    --local friendSprites = spriteSheet.SpriteSheet:new(imageWidth, imageHeight, frameSide, 3)
 
-    player = {width = 32, height = 32, speed = playerSpeed, img = playerSprite, frames = playerFrames}
-    friend = {width = 32, height = 32, speed = friendSpeed, img = friendSprite, frames = friendFrames}
+    local charAnimations = {standing = animation.Animation:new(0, 1, 1), walking = animation.Animation:new(0.2, 2, 2)}
+
+    player = character.Character:new{xPos = playerStartX, yPos = playerStartY, speed = playerSpeed, animations = charAnimations, frames = playerFrames, image = playerImage}
+    --friend = character.Character:new(friendStartX, friendStartY, friendSpeed, charAnimations, friendSprites)
     screens = {}
 
     conversation.init(5)
     startGame()
 end
 
-function getFrames(img, imgWidth, imgHeight, frameSide, numFrames)
-    local frames = {}
-    
-    local rowCount = imgWidth / frameSide
-    local colCount = imgHeight / frameSide
-    for r = 0, rowCount-1 do
-        for c = 0, colCount-1 do 
-            table.insert(frames, love.graphics.newQuad(c * frameSide, r * frameSide, frameSide, frameSide, imgWidth, imgHeight))
-        end
-    end
-
-    return frames
-end
-
 function startGame()
     conversation.reset()
-    player.xPos = 3/4 * walkingScreenWidth - player.width * 2
-    player.yPos = screenHeight/4 - player.height/2
-    resetStep(player)
+    player:reset()
+    --friend.reset()
     screens = gameLevel.generateScreens(numScreens, walkingScreenWidth, screenHeight)
 end
 
@@ -55,8 +52,9 @@ function love.draw()
     for i = 1, table.getn(screens) do
         screens[i]:draw()
     end
-    love.graphics.draw(player.img, player.frames[player.currentFrame], player.xPos, player.yPos)
-    love.graphics.draw(friend.img, friend.frames[friend.currentFrame], friend.xPos, friend.yPos)
+    --print(player.frames[0])
+    love.graphics.draw(player.image, player.frames[player.animations[player.currentAnimation].currentFrame], player.xPos, player.yPos)
+    --love.graphics.draw(friend.img, friend.frames[friend.currentFrame], friend.xPos, friend.yPos)
 
     conversation.draw()
 end
@@ -83,10 +81,15 @@ function updateCharacter(directions, dt, getDirections)
 
     up, left, down, right = directions["up"], directions["left"], directions["down"], directions["right"]
 
+    print(player.currentAnimation)
+    player.animations[player.currentAnimation]:update(dt)
+
     if not (up or left or down or right) then
-        resetStep(player)
+        player:setAnimation("standing")
         return
     end
+
+    player:setAnimation("walking")
 
     local speed = player.speed
     if((down or up) and (left or right)) then
@@ -103,34 +106,6 @@ function updateCharacter(directions, dt, getDirections)
         player.dx = speed
     elseif left and player.xPos>0 then
         player.dx = -speed
-    end
-
-    updateStep(player, dt)
-end
-
-function resetStep(char)
-    char.currentFrame = 1
-    char.stepTimer = 0
-end
-
-function updateStep(char, dt)
-    if char.currentFrame == 1 then
-        char.currentFrame = 2
-    end
-
-    if char.stepTimer < 0.2 then
-        char.stepTimer = char.stepTimer + dt
-    else
-        toggleFrame(char, dt)
-        char.stepTimer = 0
-    end
-end
-
-function toggleFrame(char)
-    if char.currentFrame == 2 or char.currentFrame == 1 then
-        char.currentFrame = 3
-    else
-        char.currentFrame = 2
     end
 end
 

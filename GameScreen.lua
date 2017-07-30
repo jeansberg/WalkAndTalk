@@ -10,8 +10,8 @@ setfenv(1, P)
 
 GameScreen = {}
 
-function GameScreen:new (o)
-  o = o or {}
+function GameScreen:new(o)
+  local o = o or {}
   setmetatable(o, self)
   self.__index = self
   return o
