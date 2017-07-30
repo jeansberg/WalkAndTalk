@@ -18,10 +18,15 @@ numScreens = 10
 frameSide = 32
 playerStartX = 3/4 * walkingScreenWidth - frameSide * 2
 playerStartY = screenHeight/4 - frameSide / 2
+<<<<<<< HEAD
 friendStartX = 3/4 * walkingScreenWidth - frameSide
 friendStartY = screenHeight/4
 
 
+=======
+friendStartX = 3/4 * walkingScreenWidth
+friendStartY = screenHeight/4
+>>>>>>> Work on animation functions
 
 
 function love.load()
@@ -31,6 +36,7 @@ function love.load()
     imageHeight = playerImage:getHeight()
 
     local playerFrames = spriteSheet.SpriteSheet:new{imageWidth = imageWidth, imageHeight = imageHeight, frameSide = frameSide, numFrames = 3}
+<<<<<<< HEAD
     local friendFrames = playerFrames
 
     local playerAnimations = {standing = animation.Animation:new(0, 1, 1), walking = animation.Animation:new(0.2, 2, 3)}
@@ -40,31 +46,29 @@ function love.load()
     friend = character.Character:new{xPos = friendStartX, yPos = friendStartY, speed = friendSpeed, animations = friendAnimations, frames = friendFrames, image = friendImage}
 
 
+=======
+    --local friendSprites = spriteSheet.SpriteSheet:new(imageWidth, imageHeight, frameSide, 3)
+
+    local charAnimations = {standing = animation.Animation:new(0, 1, 1), walking = animation.Animation:new(0.2, 2, 2)}
+
+    player = character.Character:new{xPos = playerStartX, yPos = playerStartY, speed = playerSpeed, animations = charAnimations, frames = playerFrames, image = playerImage}
+    --friend = character.Character:new(friendStartX, friendStartY, friendSpeed, charAnimations, friendSprites)
+>>>>>>> Work on animation functions
     screens = {}
 
     conversation.init(5)
     startGame()
 end
 
-function getFrames(img, imgWidth, imgHeight, frameSide, numFrames)
-    local frames = {}
-    
-    local rowCount = imgWidth / frameSide
-    local colCount = imgHeight / frameSide
-    for r = 0, rowCount-1 do
-        for c = 0, colCount-1 do 
-            table.insert(frames, love.graphics.newQuad(c * frameSide, r * frameSide, frameSide, frameSide, imgWidth, imgHeight))
-        end
-    end
-
-    return frames
-end
-
 function startGame()
     conversation.reset()
     player:reset()
+<<<<<<< HEAD
     friend:reset()
 
+=======
+    --friend.reset()
+>>>>>>> Work on animation functions
     screens = gameLevel.generateScreens(numScreens, walkingScreenWidth, screenHeight)
 end
 
@@ -72,11 +76,17 @@ function love.draw()
     for i = 1, table.getn(screens) do
         screens[i]:draw()
     end
+<<<<<<< HEAD
     --print(player.currentAnimation)
     --print(#player.frames)
     love.graphics.draw(player.image, player.frames[player.animations[player.currentAnimation].currentFrame], player.xPos, player.yPos)
     --love.graphics.draw(friend.image, friend.frames[friend.animations[friend.currentAnimation].currentFrame], friend.xPos, friend.yPos)
 
+=======
+    --print(player.frames[0])
+    love.graphics.draw(player.image, player.frames[player.animations[player.currentAnimation].currentFrame], player.xPos, player.yPos)
+    --love.graphics.draw(friend.img, friend.frames[friend.currentFrame], friend.xPos, friend.yPos)
+>>>>>>> Work on animation functions
 
     conversation.draw()
 end
@@ -109,7 +119,11 @@ function updateCharacter(char, dt, getDirections)
 
     char.animations[char.currentAnimation]:update(dt)
 
+    print(player.currentAnimation)
+    player.animations[player.currentAnimation]:update(dt)
+
     if not (up or left or down or right) then
+<<<<<<< HEAD
         char:setAnimation("standing")
         return
     end
@@ -117,6 +131,15 @@ function updateCharacter(char, dt, getDirections)
     char:setAnimation("walking")
 
     local speed = char.speed
+=======
+        player:setAnimation("standing")
+        return
+    end
+
+    player:setAnimation("walking")
+
+    local speed = player.speed
+>>>>>>> Work on animation functions
     if((down or up) and (left or right)) then
         speed = speed / math.sqrt(2)
     end
@@ -127,10 +150,17 @@ function updateCharacter(char, dt, getDirections)
         char.dy = char.dy - speed
     end
 
+<<<<<<< HEAD
     if right and char.xPos < walkingScreenWidth - char.width then
         char.dx = char.dx + speed
     elseif left and char.xPos > 0 then
         char.dx = char.dx - speed
+=======
+    if right and player.xPos<walkingScreenWidth-player.width then
+        player.dx = speed
+    elseif left and player.xPos>0 then
+        player.dx = -speed
+>>>>>>> Work on animation functions
     end
 end
 

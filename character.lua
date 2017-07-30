@@ -36,6 +36,7 @@ end
 function Character:reset()
     self.xPos = self.defaultX
     self.yPos = self.defaultY
+<<<<<<< HEAD
 end
 
 function Character:bottom()
@@ -44,4 +45,6 @@ end
 
 function Character:right()
     return self.xPos + self.width
+=======
+>>>>>>> Work on animation functions
 end

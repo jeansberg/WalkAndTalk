@@ -11,8 +11,11 @@ local table = table
 local setmetatable = setmetatable
 setfenv(1, P)
 
+<<<<<<< HEAD
 verticalPadding = 2
 
+=======
+>>>>>>> Work on animation functions
 SpriteSheet = {}
 
 function SpriteSheet:new(o)
@@ -28,7 +31,11 @@ function getFrames(imageWidth, imageHeight, frameSide, numFrames)
     local colCount = imageHeight / frameSide
     for r = 0, rowCount - 1 do
         for c = 0, colCount - 1 do 
+<<<<<<< HEAD
             table.insert(frames, love.graphics.newQuad(c * frameSide, r * frameSide + verticalPadding * r+1, frameSide, frameSide, imageWidth, imageHeight))
+=======
+            table.insert(frames, love.graphics.newQuad(c * frameSide, r * frameSide, frameSide, frameSide, imageWidth, imageHeight))
+>>>>>>> Work on animation functions
         end
     end
 
