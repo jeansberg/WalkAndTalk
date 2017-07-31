@@ -14,12 +14,13 @@ screenHeight = 600
 playerSpeed = 150
 friendSpeed = 100
 scrollSpeed = 100
-numScreens = 5
+numScreens = 10
 frameSide = 32
 playerStartX = 3/4 * walkingScreenWidth - frameSide * 2
 playerStartY = screenHeight/4 - frameSide / 2
 friendStartX = 3/4 * walkingScreenWidth - frameSide
 friendStartY = screenHeight/4
+
 
 
 
