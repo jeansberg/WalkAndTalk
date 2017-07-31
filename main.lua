@@ -31,12 +31,12 @@ function love.load()
     imageHeight = playerImage:getHeight()
 
     local playerFrames = spriteSheet.SpriteSheet:new{imageWidth = imageWidth, imageHeight = imageHeight, frameSide = frameSide, numFrames = 3}
-    local friendFrames = playerFrames
+    local friendFrames = spriteSheet.SpriteSheet:new{imageWidth = imageWidth, imageHeight = imageHeight, frameSide = frameSide, numFrames = 3}
 
     local playerAnimations = {standing = animation.Animation:new(0, 1, 1), walking = animation.Animation:new(0.2, 2, 3)}
     local friendAnimations = {standing = animation.Animation:new(0, 1, 1), walking = animation.Animation:new(0.2, 2, 3)}
 
-    player = character.Character:new{xPos = playerStartX, yPos = playerStartY, speed = playerSpeed, animations = playerAnimations   , frames = playerFrames, image = playerImage}
+    player = character.Character:new{xPos = playerStartX, yPos = playerStartY, speed = playerSpeed, animations = playerAnimations, frames = playerFrames, image = playerImage}
     friend = character.Character:new{xPos = friendStartX, yPos = friendStartY, speed = friendSpeed, animations = friendAnimations, frames = friendFrames, image = friendImage}
 
 
@@ -58,12 +58,9 @@ function love.draw()
     for i = 1, table.getn(screens) do
         screens[i]:draw()
     end
-    --print(player.currentAnimation)
-    --print(#player.frames)
+
     love.graphics.draw(player.image, player.frames[player.animations[player.currentAnimation].currentFrame], player.xPos, player.yPos)
-    --love.graphics.draw(friend.image, friend.frames[friend.animations[friend.currentAnimation].currentFrame], friend.xPos, friend.yPos)
-
-
+    love.graphics.draw(friend.image, friend.frames[friend.animations[friend.currentAnimation].currentFrame], friend.xPos, friend.yPos)
     conversation.draw()
 end
 
@@ -74,8 +71,8 @@ function love.update(dt)
         startGame()
     end
 
-    --updateCharacter(friend, dt, getFriendDirections)
-    --moveCharacter(friend, dt)
+    updateCharacter(friend, dt, getFriendDirections)
+    moveCharacter(friend, dt)
 
     setFriendSpeed()
     updateCharacter(player, dt, input.getMovementInput)
