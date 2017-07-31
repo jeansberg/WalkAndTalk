@@ -3,27 +3,41 @@ require "gameScreen"
 require "input"
 require "collisions"
 require "conversation"
+require "character"
 
+
+-----------------------------------------------------------------------------------------------------------------------
+-- Constants
+-----------------------------------------------------------------------------------------------------------------------
 walkingScreenWidth = love.graphics.getWidth() / 2
-screenHeight = love.graphics.getHeight()
-frameSide = 32
-frameHeight = 32
-playerSpeed = 120
+screenHeight = 600
+playerSpeed = 150
+friendSpeed = 100
 scrollSpeed = 100
 numScreens = 10
+frameSide = 32
+playerStartX = 3/4 * walkingScreenWidth - frameSide * 2
+playerStartY = screenHeight/4 - frameSide / 2
+friendStartX = 3/4 * walkingScreenWidth - frameSide
+friendStartY = screenHeight/4
+
+
+
 
 function love.load()
-    playerSprite = love.graphics.newImage("resources/images/player.png")
-    imageWidth = playerSprite:getWidth()
-    imageHeight = playerSprite:getHeight()
+    playerImage = love.graphics.newImage("resources/images/player.png")
+    friendImage = love.graphics.newImage("resources/images/friend.png")
+    imageWidth = playerImage:getWidth()
+    imageHeight = playerImage:getHeight()
 
-    walkingFrames = {
-        love.graphics.newQuad(0, 0, frameSide, frameSide, imageWidth, imageHeight),
-        love.graphics.newQuad(0, frameSide + 2, frameSide, frameSide, imageWidth, imageHeight),
-        love.graphics.newQuad(frameSide, frameSide + 2, frameSide, frameSide, imageWidth, imageHeight)
-    }
+    local playerFrames = spriteSheet.SpriteSheet:new{imageWidth = imageWidth, imageHeight = imageHeight, frameSide = frameSide, numFrames = 3}
+    local friendFrames = playerFrames
 
-    player = {width = 32, height = 32, speed = playerSpeed}
+    local playerAnimations = {standing = animation.Animation:new(0, 1, 1), walking = animation.Animation:new(0.2, 2, 3)}
+    local friendAnimations = {standing = animation.Animation:new(0, 1, 1), walking = animation.Animation:new(0.2, 2, 3)}
+
+    player = character.Character:new{xPos = playerStartX, yPos = playerStartY, speed = playerSpeed, animations = playerAnimations   , frames = playerFrames, image = playerImage}
+    friend = character.Character:new{xPos = friendStartX, yPos = friendStartY, speed = friendSpeed, animations = friendAnimations, frames = friendFrames, image = friendImage}
     screens = {}
 
     conversation.init(5)
@@ -32,9 +46,8 @@ end
 
 function startGame()
     conversation.reset()
-    player.xPos = 3/4 * walkingScreenWidth - player.width/2
-    player.yPos = screenHeight/4 - player.height/2
-    resetStep()
+    player:reset()
+    friend:reset()
     screens = gameLevel.generateScreens(numScreens, walkingScreenWidth, screenHeight)
 end
 
@@ -42,7 +55,10 @@ function love.draw()
     for i = 1, table.getn(screens) do
         screens[i]:draw()
     end
-    love.graphics.draw(playerSprite, walkingFrames[currentFrame], player.xPos, player.yPos)
+    --print(player.currentAnimation)
+    --print(#player.frames)
+    love.graphics.draw(player.image, player.frames[player.animations[player.currentAnimation].currentFrame], player.xPos, player.yPos)
+    --love.graphics.draw(friend.image, friend.frames[friend.animations[friend.currentAnimation].currentFrame], friend.xPos, friend.yPos)
 
     conversation.draw()
 end
@@ -54,88 +70,112 @@ function love.update(dt)
         startGame()
     end
 
-    local directions = input.getMovementInput()
-    updatePlayer(directions, dt)
-    movePlayer(dt)
+    --updateCharacter(friend, dt, getFriendDirections)
+    --moveCharacter(friend, dt)
+
+    setFriendSpeed()
+    updateCharacter(player, dt, input.getMovementInput)
+    moveCharacter(player, dt)
 
     for i = 1, table.getn(screens) do
         screens[i]:update(scrollSpeed, dt)
     end
 end
 
-function updatePlayer(directions, dt)
-    player.dx = 0
-    player.dy = -scrollSpeed
+function updateCharacter(char, dt, getDirections)
+    char.dx = 0
+    char.dy = -scrollSpeed
+    local directions = getDirections()
 
-    up, left, down, right = directions["up"], directions["left"], directions["down"], directions["right"]
+    local up, left, down, right = directions["up"], directions["left"], directions["down"], directions["right"]
+
+    char.animations[char.currentAnimation]:update(dt)
 
     if not (up or left or down or right) then
-        resetStep()
+        char:setAnimation("standing")
         return
     end
 
-    local speed = player.speed
+    char:setAnimation("walking")
+
+    local speed = char.speed
     if((down or up) and (left or right)) then
         speed = speed / math.sqrt(2)
     end
 
-    if down and player.yPos<screenHeight-player.height then
-        player.dy = speed
+    if down and char.yPos<screenHeight - char.height then
+        char.dy = char.dy + speed
     elseif up then
-        player.dy = -speed
+        char.dy = char.dy - speed
     end
 
-    if right and player.xPos<walkingScreenWidth-player.width then
-        player.dx = speed
-    elseif left and player.xPos>0 then
-        player.dx = -speed
-    end
-
-    updateStep(dt)
-end
-
-function resetStep()
-    currentFrame = 1
-    stepTimer = 0
-end
-
-function updateStep(dt)
-    if currentFrame == 1 then
-        currentFrame = 2
-    end
-
-    if stepTimer < 0.2 then
-        stepTimer = stepTimer + dt
-    else
-        toggleFrame(dt)
-        stepTimer = 0
+    if right and char.xPos < walkingScreenWidth - char.width then
+        char.dx = char.dx + speed
+    elseif left and char.xPos > 0 then
+        char.dx = char.dx - speed
     end
 end
 
-function toggleFrame()
-    if currentFrame == 2 or currentFrame == 1 then
-        currentFrame = 3
-    else
-        currentFrame = 2
-    end
-end
+function moveCharacter(char, dt)
+    -- Update character position
+    char.xPos = char.xPos + char.dx * dt
+    char.yPos = char.yPos + char.dy * dt
 
-function movePlayer(dt)
-    player.xPos = player.xPos + player.dx * dt
-    player.yPos = player.yPos + player.dy * dt
+    if collisions.checkOverlap(player, friend) then
+        collisions.resolveCollision(player, friend, scrollSpeed, dt)
+    end
 
     for i = 1, table.getn(screens) do
-        if collisions.checkCollision(player, screens[i]:getWall()) then
-            if screens[i].layout == "finish" then
+        local screen = screens[i]
+        if collisions.checkOverlap(char, screen) then
+        print(screen.layout)
+            if char == player and screen.layout == "finish" then
                 startGame()
             end
 
-            collisions.resolveWallCollision(player, screens[i]:getWall(), scrollSpeed)
+            char.screenLayout = screen.layout
+
+            local wall = {}
+            if screen.layout == "right" and char.xPos < 200 then
+                wall = {xPos = 0, yPos=screen.yPos, width = 200, height = 600}
+
+                print("Player y + height" .. player.yPos + player.height)
+                print("Wall width" .. screen.yPos + wall.height)
+
+                collisions.resolveCollision(char, wall, scrollSpeed, dt)
+            elseif screen.layout == "left" and char.xPos >= 200 - char.width then
+                wall = {xPos = 200, yPos=screen.yPos, width = 200, height = 600}
+                collisions.resolveCollision(char, wall, scrollSpeed, dt)
+            end
+
             break
         end
     end
 
-    if player.yPos + player.height > table.getn(screens) * screenHeight then
+    if char == player and char.yPos < 0 then
         startGame()
+    end
+end
+
+function getFriendDirections()
+    down = true
+    up = false
+    left = false
+    right = false
+    
+    if friend.screenLayout == "leftToRight" and friend.xPos < friendStartX then
+        right = true
+    elseif friend.screenLayout == "rightToLeft" and friend.xPos > 1/4 * walkingScreenWidth + frameSide then
+        left = true
+    end
+
+    return {up=up, left=left, down=down, right=right}
+end
+
+function setFriendSpeed()
+    if friend.yPos < screenHeight / 2 then
+        friend.speed = 120
+    else
+        friend.speed = 100
     end
 end

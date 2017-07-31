@@ -29,7 +29,7 @@ fillerPath = "resources/text/filler.txt"
 Topic = {}
 
 function Topic:new (o)
-    o = o or {}
+    local o = o or {}
     setmetatable(o, self)
     self.__index = self
     return o
@@ -102,7 +102,6 @@ function update(dt)
     end
 
     if failures == maxFailures then
-        print("Return false")
         return false
     end
 
@@ -182,7 +181,6 @@ function getNewAnswer(usedAnswers)
     local answer = ""
     
     while answer == "" do
-        print("getting new answer")
         local newAnswer = topics[love.math.random(1, table.getn(topics))]["answer"]
         if not tableContains(usedAnswers, newAnswer) then
             answer = newAnswer

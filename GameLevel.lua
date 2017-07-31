@@ -38,9 +38,9 @@ function generateScreens(numScreens, width, height)
             end
         end
         left, right = getImages(layout)
-        screens[i] = gameScreen.GameScreen:new{width = width, height = height, position = (i - 1)*600, left = left, right = right, flipped = flipped, layout = layout}
+        screens[i] = gameScreen.GameScreen:new{width = width, height = height, xPos = 0, yPos = (i - 1)*600, left = left, right = right, flipped = flipped, layout = layout}
     end
-    screens[numScreens + 1] = gameScreen.GameScreen:new{width = width, height = height, position = (numScreens)*600, left = nil, right = nil, flipped = false, layout = "finish"}
+    screens[numScreens + 1] = gameScreen.GameScreen:new{width = width, height = height, xPos = 0, yPos = (numScreens)*600, left = nil, right = nil, flipped = false, layout = "finish"}
     return screens
 end
 
