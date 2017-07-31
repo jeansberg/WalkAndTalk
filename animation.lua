@@ -27,7 +27,7 @@ end
 
 function Animation:update(dt)
     if self.timerMax == 0 then
-        print("static " .. self.currentFrame)
+        --print("static " .. self.currentFrame)
         return
     end
 
@@ -42,5 +42,5 @@ function Animation:update(dt)
         end
         self.timer = 0
     end
-   print("walking " .. self.currentFrame)
+   --print("walking " .. self.currentFrame)
 end

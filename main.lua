@@ -11,14 +11,14 @@ require "character"
 -----------------------------------------------------------------------------------------------------------------------
 walkingScreenWidth = love.graphics.getWidth() / 2
 screenHeight = love.graphics.getHeight()
-playerSpeed = 120
+playerSpeed = 130
 friendSpeed = 100
 scrollSpeed = 100
 numScreens = 5
 frameSide = 32
 playerStartX = 3/4 * walkingScreenWidth - frameSide * 2
 playerStartY = screenHeight/4 - frameSide / 2
-friendStartX = 3/4 * walkingScreenWidth
+friendStartX = 3/4 * walkingScreenWidth - frameSide
 friendStartY = screenHeight/4
 
 
@@ -31,10 +31,11 @@ function love.load()
     local playerFrames = spriteSheet.SpriteSheet:new{imageWidth = imageWidth, imageHeight = imageHeight, frameSide = frameSide, numFrames = 3}
     local friendFrames = playerFrames
 
-    local charAnimations = {standing = animation.Animation:new(0, 1, 1), walking = animation.Animation:new(0.2, 2, 3)}
+    local playerAnimations = {standing = animation.Animation:new(0, 1, 1), walking = animation.Animation:new(0.2, 2, 3)}
+    local friendAnimations = {standing = animation.Animation:new(0, 1, 1), walking = animation.Animation:new(0.2, 2, 3)}
 
-    player = character.Character:new{xPos = playerStartX, yPos = playerStartY, speed = playerSpeed, animations = charAnimations, frames = playerFrames, image = playerImage}
-    friend = character.Character:new{xPos = friendStartX, yPos = friendStartY, speed = friendSpeed, animations = charAnimations, frames = friendFrames, image = friendImage}
+    player = character.Character:new{xPos = playerStartX, yPos = playerStartY, speed = playerSpeed, animations = playerAnimations   , frames = playerFrames, image = playerImage}
+    friend = character.Character:new{xPos = friendStartX, yPos = friendStartY, speed = friendSpeed, animations = friendAnimations, frames = friendFrames, image = friendImage}
     screens = {}
 
     conversation.init(5)
@@ -67,6 +68,10 @@ function love.update(dt)
         startGame()
     end
 
+    updateCharacter(friend, dt, getFriendDirections)
+    moveCharacter(friend, dt)
+
+    setFriendSpeed()
     updateCharacter(player, dt, input.getMovementInput)
     moveCharacter(player, dt)
 
@@ -75,37 +80,37 @@ function love.update(dt)
     end
 end
 
-function updateCharacter(directions, dt, getDirections)
-    player.dx = 0
-    player.dy = -scrollSpeed
-    directions = getDirections()
+function updateCharacter(char, dt, getDirections)
+    char.dx = 0
+    char.dy = -scrollSpeed
+    local directions = getDirections()
 
-    up, left, down, right = directions["up"], directions["left"], directions["down"], directions["right"]
+    local up, left, down, right = directions["up"], directions["left"], directions["down"], directions["right"]
 
-    player.animations[player.currentAnimation]:update(dt)
+    char.animations[char.currentAnimation]:update(dt)
 
     if not (up or left or down or right) then
-        player:setAnimation("standing")
+        char:setAnimation("standing")
         return
     end
 
-    player:setAnimation("walking")
+    char:setAnimation("walking")
 
-    local speed = player.speed
+    local speed = char.speed
     if((down or up) and (left or right)) then
         speed = speed / math.sqrt(2)
     end
 
-    if down and player.yPos<screenHeight-player.height then
-        player.dy = speed
+    if down and char.yPos<screenHeight - char.height then
+        char.dy = char.dy + speed
     elseif up then
-        player.dy = -speed
+        char.dy = char.dy - speed
     end
 
-    if right and player.xPos<walkingScreenWidth-player.width then
-        player.dx = speed
-    elseif left and player.xPos>0 then
-        player.dx = -speed
+    if right and char.xPos < walkingScreenWidth - char.width then
+        char.dx = char.dx + speed
+    elseif left and char.xPos > 0 then
+        char.dx = char.dx - speed
     end
 end
 
@@ -119,6 +124,8 @@ function moveCharacter(char, dt)
             if screen.layout == "finish" then
                 startGame()
             end
+
+            char.screenLayout = screen.layout
 
             local wall = {}
             if screen.layout == "right" and char.xPos < 200 then
@@ -139,5 +146,24 @@ function moveCharacter(char, dt)
 end
 
 function getFriendDirections()
+    down = true
+    up = false
+    left = false
+    right = false
+    
+    if friend.screenLayout == "leftToRight" and friend.xPos < friendStartX then
+        right = true
+    elseif friend.screenLayout == "rightToLeft" and friend.xPos > 1/4 * walkingScreenWidth + frameSide then
+        left = true
+    end
 
+    return {up=up, left=left, down=down, right=right}
+end
+
+function setFriendSpeed()
+    if friend.yPos < screenHeight / 2 then
+        friend.speed = 120
+    else
+        friend.speed = 100
+    end
 end
