@@ -3,6 +3,9 @@
 
 local P = {}
 collisions = P
+
+-- Imports
+local print = print
 setfenv(1, P)
 
 function checkOverlap(rect1, rect2)
@@ -21,16 +24,16 @@ function checkOverlap(rect1, rect2)
     end
 end
 
-function resolveWallCollision(char, wall, scrollSpeed)
-    if char.dx > 0 then
-        char.xPos = wall.xPos - char.width
-    elseif char.dx < 0 then
-        char.xPos = wall.xPos + wall.width
+function resolveCollision(rect1, rect2, scrollSpeed)
+    if rect1.dx > 0 then
+        rect1.xPos = rect2.xPos - rect1.width
+    elseif rect1.dx < 0 then
+        rect1.xPos = rect2.xPos + rect2.width
     end
-
-    if char.dy > scrollSpeed then
-        char.yPos = wall.yPos - char.height
-    elseif char.dy < -scrollSpeed then
-        char.yPos = wall.yPos + wall.height
+print(rect1.dy)
+    if rect1.dy > 0 then
+        rect1.yPos = rect2.yPos - rect1.height
+    elseif rect1.dy < -scrollSpeed then
+        rect1.yPos = rect2.yPos + rect2.height
     end
 end

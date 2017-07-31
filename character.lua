@@ -37,3 +37,11 @@ function Character:reset()
     self.xPos = self.defaultX
     self.yPos = self.defaultY
 end
+
+function Character:bottom()
+    return self.yPos + self.height
+end
+
+function Character:right()
+    return self.xPos + self.width
+end

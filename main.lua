@@ -11,7 +11,7 @@ require "character"
 -----------------------------------------------------------------------------------------------------------------------
 walkingScreenWidth = love.graphics.getWidth() / 2
 screenHeight = love.graphics.getHeight()
-playerSpeed = 130
+playerSpeed = 150
 friendSpeed = 100
 scrollSpeed = 100
 numScreens = 5
@@ -118,10 +118,14 @@ function moveCharacter(char, dt)
     char.xPos = char.xPos + char.dx * dt
     char.yPos = char.yPos + char.dy * dt
 
+    if collisions.checkOverlap(player, friend) then
+        collisions.resolveCollision(player, friend, scrollSpeed)
+    end
+
     for i = 1, table.getn(screens) do
         local screen = screens[i]
         if collisions.checkOverlap(char, screen) then
-            if screen.layout == "finish" then
+            if char == player and screen.layout == "finish" then
                 startGame()
             end
 
@@ -130,17 +134,17 @@ function moveCharacter(char, dt)
             local wall = {}
             if screen.layout == "right" and char.xPos < 200 then
                 wall = {xPos=screen.xPos, yPos=screen.yPos, width = 200, height = 600}
-                collisions.resolveWallCollision(char, wall, scrollSpeed)
+                collisions.resolveCollision(char, wall, scrollSpeed)
             elseif screen.layout == "left" and char.xPos >= 200 - char.width then
                 wall = {xPos=screen.xPos + 200, yPos=screen.yPos, width = 200, height = 600}
-                collisions.resolveWallCollision(char, wall, scrollSpeed)
+                collisions.resolveCollision(char, wall, scrollSpeed)
             end
 
             break
         end
     end
 
-    if char.yPos < 0 then
+    if char == player and char.yPos < 0 then
         startGame()
     end
 end
