@@ -37,6 +37,9 @@ end
 function Animation:update(dt)
     if self.timerMax == 0 then
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> Finishes friend movement code
         --print("static " .. self.currentFrame)
         return
     end
@@ -63,8 +66,12 @@ function Animation:update(dt)
         self.timer = 0
     end
 <<<<<<< HEAD
+<<<<<<< HEAD
    --print("walking " .. self.currentFrame)
 =======
     print(self.currentFrame)
 >>>>>>> Work on animation functions
+=======
+   --print("walking " .. self.currentFrame)
+>>>>>>> Finishes friend movement code
 end
