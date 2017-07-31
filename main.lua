@@ -10,7 +10,7 @@ require "character"
 -- Constants
 -----------------------------------------------------------------------------------------------------------------------
 walkingScreenWidth = love.graphics.getWidth() / 2
-screenHeight = love.graphics.getHeight()
+screenHeight = 600
 playerSpeed = 150
 friendSpeed = 100
 scrollSpeed = 100
@@ -56,7 +56,7 @@ function love.draw()
     --print(player.currentAnimation)
     --print(#player.frames)
     love.graphics.draw(player.image, player.frames[player.animations[player.currentAnimation].currentFrame], player.xPos, player.yPos)
-    love.graphics.draw(friend.image, friend.frames[friend.animations[friend.currentAnimation].currentFrame], friend.xPos, friend.yPos)
+    --love.graphics.draw(friend.image, friend.frames[friend.animations[friend.currentAnimation].currentFrame], friend.xPos, friend.yPos)
 
     conversation.draw()
 end
@@ -68,8 +68,8 @@ function love.update(dt)
         startGame()
     end
 
-    updateCharacter(friend, dt, getFriendDirections)
-    moveCharacter(friend, dt)
+    --updateCharacter(friend, dt, getFriendDirections)
+    --moveCharacter(friend, dt)
 
     setFriendSpeed()
     updateCharacter(player, dt, input.getMovementInput)
@@ -115,16 +115,18 @@ function updateCharacter(char, dt, getDirections)
 end
 
 function moveCharacter(char, dt)
+    -- Update character position
     char.xPos = char.xPos + char.dx * dt
     char.yPos = char.yPos + char.dy * dt
 
     if collisions.checkOverlap(player, friend) then
-        collisions.resolveCollision(player, friend, scrollSpeed)
+        collisions.resolveCollision(player, friend, scrollSpeed, dt)
     end
 
     for i = 1, table.getn(screens) do
         local screen = screens[i]
         if collisions.checkOverlap(char, screen) then
+        print(screen.layout)
             if char == player and screen.layout == "finish" then
                 startGame()
             end
@@ -133,11 +135,15 @@ function moveCharacter(char, dt)
 
             local wall = {}
             if screen.layout == "right" and char.xPos < 200 then
-                wall = {xPos=screen.xPos, yPos=screen.yPos, width = 200, height = 600}
-                collisions.resolveCollision(char, wall, scrollSpeed)
+                wall = {xPos = 0, yPos=screen.yPos, width = 200, height = 600}
+
+                print("Player y + height" .. player.yPos + player.height)
+                print("Wall width" .. screen.yPos + wall.height)
+
+                collisions.resolveCollision(char, wall, scrollSpeed, dt)
             elseif screen.layout == "left" and char.xPos >= 200 - char.width then
-                wall = {xPos=screen.xPos + 200, yPos=screen.yPos, width = 200, height = 600}
-                collisions.resolveCollision(char, wall, scrollSpeed)
+                wall = {xPos = 200, yPos=screen.yPos, width = 200, height = 600}
+                collisions.resolveCollision(char, wall, scrollSpeed, dt)
             end
 
             break
