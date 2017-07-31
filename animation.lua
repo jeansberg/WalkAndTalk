@@ -15,31 +15,32 @@ function Animation:new(timerMax, startFrame, endFrame)
     local o = {timerMax = timerMax, startFrame = startFrame, endFrame = endFrame}
     setmetatable(o, self)
     self.__index = self
-    self.currentFrame = startFrame
-    self.timer = 0
+    o.currentFrame = startFrame
+    o.timer = 0
     return o
 end
 
 function Animation:reset()
-    self.currentFrame = startFrame
+    self.currentFrame = self.startFrame
     self.timer = 0
 end
 
 function Animation:update(dt)
     if self.timerMax == 0 then
-        print(self.currentFrame)
+        print("static " .. self.currentFrame)
         return
     end
 
+    
     if self.timer < self.timerMax then
         self.timer = self.timer + dt
     else
         if self.currentFrame == self.endFrame then
-            self.currentFrame = startFrame
+            self.currentFrame = self.startFrame
         else
             self.currentFrame = self.currentFrame + 1
         end
         self.timer = 0
     end
-    print(self.currentFrame)
+   print("walking " .. self.currentFrame)
 end

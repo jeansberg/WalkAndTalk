@@ -29,12 +29,12 @@ function love.load()
     imageHeight = playerImage:getHeight()
 
     local playerFrames = spriteSheet.SpriteSheet:new{imageWidth = imageWidth, imageHeight = imageHeight, frameSide = frameSide, numFrames = 3}
-    --local friendSprites = spriteSheet.SpriteSheet:new(imageWidth, imageHeight, frameSide, 3)
+    local friendFrames = playerFrames
 
-    local charAnimations = {standing = animation.Animation:new(0, 1, 1), walking = animation.Animation:new(0.2, 2, 2)}
+    local charAnimations = {standing = animation.Animation:new(0, 1, 1), walking = animation.Animation:new(0.2, 2, 3)}
 
     player = character.Character:new{xPos = playerStartX, yPos = playerStartY, speed = playerSpeed, animations = charAnimations, frames = playerFrames, image = playerImage}
-    --friend = character.Character:new(friendStartX, friendStartY, friendSpeed, charAnimations, friendSprites)
+    friend = character.Character:new{xPos = friendStartX, yPos = friendStartY, speed = friendSpeed, animations = charAnimations, frames = friendFrames, image = friendImage}
     screens = {}
 
     conversation.init(5)
@@ -44,7 +44,7 @@ end
 function startGame()
     conversation.reset()
     player:reset()
-    --friend.reset()
+    friend:reset()
     screens = gameLevel.generateScreens(numScreens, walkingScreenWidth, screenHeight)
 end
 
@@ -52,9 +52,10 @@ function love.draw()
     for i = 1, table.getn(screens) do
         screens[i]:draw()
     end
-    --print(player.frames[0])
+    --print(player.currentAnimation)
+    --print(#player.frames)
     love.graphics.draw(player.image, player.frames[player.animations[player.currentAnimation].currentFrame], player.xPos, player.yPos)
-    --love.graphics.draw(friend.img, friend.frames[friend.currentFrame], friend.xPos, friend.yPos)
+    love.graphics.draw(friend.image, friend.frames[friend.animations[friend.currentAnimation].currentFrame], friend.xPos, friend.yPos)
 
     conversation.draw()
 end
@@ -81,7 +82,6 @@ function updateCharacter(directions, dt, getDirections)
 
     up, left, down, right = directions["up"], directions["left"], directions["down"], directions["right"]
 
-    print(player.currentAnimation)
     player.animations[player.currentAnimation]:update(dt)
 
     if not (up or left or down or right) then
