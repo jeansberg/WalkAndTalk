@@ -68,6 +68,7 @@ function reset()
     failures = 0
     timer = topicRate
     remainingTopics = deepcopy(topics)
+    comment = ""
 end
 
 -------------------------------------
@@ -188,6 +189,14 @@ function getNewAnswer(usedAnswers)
     end
 
     return answer
+end
+
+function interrupt()
+    comment = "Will you please stop dreaming!?"
+    topPosition = ""
+    rightPosition = ""
+    bottomPosition = ""
+    leftPosition = ""
 end
 
 -------------------------------------

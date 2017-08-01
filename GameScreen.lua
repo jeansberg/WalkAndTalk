@@ -46,3 +46,13 @@ function GameScreen:getBarrier()
         return nil
     end
 end
+
+function GameScreen:getHazard()
+    if self.layout == "rightToLeft" then
+        return {xPos = self.width/2, yPos = self.yPos + 200, width = 200, height = 400}
+    elseif self.layout == "leftToRight"  then
+        return {xPos = 0, yPos = self.yPos + 200, width = 200, height = 400}
+    else
+        return nil
+    end
+end
