@@ -23,6 +23,7 @@ friendStartY = screenHeight/4
 restartTimerMax = 5
 restartTimer = 0
 restarting = false
+finalComment = ""
 
 function love.load()
     playerImage = love.graphics.newImage("resources/images/player.png")
@@ -66,7 +67,7 @@ end
 
 function love.update(dt)
     if restarting then
-        conversation.interrupt()
+        conversation.interrupt(finalComment)
         if restartTimer < restartTimerMax then
             restartTimer = restartTimer + dt
         else
@@ -78,7 +79,7 @@ function love.update(dt)
         success = conversation.update(dt)
 
         if not success then
-            restart()
+            restart("You're not listening! Will you please stop daydreaming?")
         end
 
         updateCharacter(friend, dt, getFriendDirections)
@@ -143,7 +144,7 @@ function moveCharacter(char, dt)
             char.screenLayout = screen.layout
 
             if char == player and char.screenLayout == "finish" then
-                restart()
+                restart("We're here. Thank you for the company!")
             end
             
             for j = 1, table.getn(screens) do
@@ -157,7 +158,7 @@ function moveCharacter(char, dt)
                     local hazard = screens[j]:getHazard()
                     if hazard then
                         if collisions.checkOverlap(char, hazard) then
-                            restart()
+                            restart("Watch out! You're always dreaming!")
                         end
                     end
                 end
@@ -166,7 +167,7 @@ function moveCharacter(char, dt)
     end
 
     if char == player and char.yPos < 0 then
-        restart()
+        restart("Catch up! Stop daydreaming!")
     end
 end
 
@@ -193,6 +194,7 @@ function setFriendSpeed()
     end
 end
 
-function restart()
+function restart(comment)
+    finalComment = comment
     restarting = true
 end
