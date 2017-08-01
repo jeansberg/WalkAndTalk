@@ -11,7 +11,7 @@ require "character"
 -----------------------------------------------------------------------------------------------------------------------
 walkingScreenWidth = love.graphics.getWidth() / 2
 screenHeight = 600
-playerSpeed = 150
+playerSpeed = 120
 friendSpeed = 100
 scrollSpeed = 100
 numScreens = 10
@@ -92,9 +92,6 @@ function updateCharacter(char, dt, getDirections)
 
     char.animations[char.currentAnimation]:update(dt)
 
-    print(player.currentAnimation)
-    player.animations[player.currentAnimation]:update(dt)
-
     if not (up or left or down or right) then
         char:setAnimation("standing")
         return
@@ -132,27 +129,21 @@ function moveCharacter(char, dt)
     for i = 1, table.getn(screens) do
         local screen = screens[i]
         if collisions.checkOverlap(char, screen) then
-        print(screen.layout)
-            if char == player and screen.layout == "finish" then
-                startGame()
-            end
-
             char.screenLayout = screen.layout
 
-            local wall = {}
-            if screen.layout == "right" and char.xPos < 200 then
-                wall = {xPos = 0, yPos=screen.yPos, width = 200, height = 600}
-
-                print("Player y + height" .. player.yPos + player.height)
-                print("Wall width" .. screen.yPos + wall.height)
-
-                collisions.resolveCollision(char, wall, scrollSpeed, dt)
-            elseif screen.layout == "left" and char.xPos >= 200 - char.width then
-                wall = {xPos = 200, yPos=screen.yPos, width = 200, height = 600}
-                collisions.resolveCollision(char, wall, scrollSpeed, dt)
+            if char == player and char.screenLayout == "finish" then
+                startGame()
             end
-
-            break
+            
+            for j = 1, table.getn(screens) do
+                local barrier = screens[j]:getBarrier()
+                if barrier then
+                    if collisions.checkOverlap(char, barrier) then
+                        collisions.resolveCollision(char, barrier, scrollSpeed, dt)
+                        break
+                    end
+                end
+            end
         end
     end
 
