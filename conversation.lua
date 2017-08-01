@@ -68,6 +68,8 @@ function reset()
     failures = 0
     timer = topicRate
     remainingTopics = deepcopy(topics)
+    comment = ""
+    finalComment = ""
 end
 
 -------------------------------------
@@ -142,6 +144,8 @@ end
 -- Draws the current topic and the rest of the conversation UI.
 -------------------------------------
 function draw()
+    love.graphics.printf(finalComment, 500, 50, 200)
+
     if topic then
         love.graphics.printf(comment, 500, 50, 200)
 
@@ -188,6 +192,15 @@ function getNewAnswer(usedAnswers)
     end
 
     return answer
+end
+
+function interrupt(final)
+    finalComment = final
+    comment = ""
+    topPosition = ""
+    rightPosition = ""
+    bottomPosition = ""
+    leftPosition = ""
 end
 
 -------------------------------------

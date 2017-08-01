@@ -40,7 +40,6 @@ function generateScreens(numScreens, width, height)
                 layout = "left"
             end
         end
-        print(layout)
         left, right = getImages(layout)
         screens[i] = gameScreen.GameScreen:new{width = width, height = height, xPos = 0, yPos = (i - 1)*600, left = left, right = right, flipped = flipped, layout = layout}
     end

@@ -20,9 +20,10 @@ playerStartX = 3/4 * walkingScreenWidth - frameSide * 2
 playerStartY = screenHeight/4 - frameSide / 2
 friendStartX = 3/4 * walkingScreenWidth - frameSide
 friendStartY = screenHeight/4
-
-
-
+restartTimerMax = 5
+restartTimer = 0
+restarting = false
+finalComment = ""
 
 function love.load()
     playerImage = love.graphics.newImage("resources/images/player.png")
@@ -65,21 +66,32 @@ function love.draw()
 end
 
 function love.update(dt)
-    success = conversation.update(dt)
+    if restarting then
+        conversation.interrupt(finalComment)
+        if restartTimer < restartTimerMax then
+            restartTimer = restartTimer + dt
+        else
+            restartTimer = 0
+            restarting = false
+            startGame()
+        end
+    else
+        success = conversation.update(dt)
 
-    if not success then
-        startGame()
-    end
+        if not success then
+            restart("You're not listening! Will you please stop daydreaming?")
+        end
 
-    updateCharacter(friend, dt, getFriendDirections)
-    moveCharacter(friend, dt)
+        updateCharacter(friend, dt, getFriendDirections)
+        moveCharacter(friend, dt)
 
-    setFriendSpeed()
-    updateCharacter(player, dt, input.getMovementInput)
-    moveCharacter(player, dt)
+        setFriendSpeed()
+        updateCharacter(player, dt, input.getMovementInput)
+        moveCharacter(player, dt)
 
-    for i = 1, table.getn(screens) do
-        screens[i]:update(scrollSpeed, dt)
+        for i = 1, table.getn(screens) do
+            screens[i]:update(scrollSpeed, dt)
+        end
     end
 end
 
@@ -132,7 +144,7 @@ function moveCharacter(char, dt)
             char.screenLayout = screen.layout
 
             if char == player and char.screenLayout == "finish" then
-                startGame()
+                restart("We're here. Thank you for the company!")
             end
             
             for j = 1, table.getn(screens) do
@@ -142,13 +154,20 @@ function moveCharacter(char, dt)
                         collisions.resolveCollision(char, barrier, scrollSpeed, dt)
                         break
                     end
+                else
+                    local hazard = screens[j]:getHazard()
+                    if hazard then
+                        if collisions.checkOverlap(char, hazard) then
+                            restart("Watch out! You're always dreaming!")
+                        end
+                    end
                 end
             end
         end
     end
 
     if char == player and char.yPos < 0 then
-        startGame()
+        restart("Catch up! Stop daydreaming!")
     end
 end
 
@@ -173,4 +192,9 @@ function setFriendSpeed()
     else
         friend.speed = 100
     end
+end
+
+function restart(comment)
+    finalComment = comment
+    restarting = true
 end
