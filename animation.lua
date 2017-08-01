@@ -27,20 +27,18 @@ end
 
 function Animation:update(dt)
     if self.timerMax == 0 then
-        --print("static " .. self.currentFrame)
         return
     end
 
-    
     if self.timer < self.timerMax then
         self.timer = self.timer + dt
-    else
-        if self.currentFrame == self.endFrame then
-            self.currentFrame = self.startFrame
-        else
-            self.currentFrame = self.currentFrame + 1
-        end
-        self.timer = 0
+        return
     end
-   --print("walking " .. self.currentFrame)
+
+    if self.currentFrame == self.endFrame then
+        self.currentFrame = self.startFrame
+    else
+        self.currentFrame = self.currentFrame + 1
+    end
+    self.timer = 0
 end

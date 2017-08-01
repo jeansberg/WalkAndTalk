@@ -7,6 +7,7 @@ gameLevel = P
 -- Imports
 local love = love
 local gameScreen = gameScreen
+local print = print
 setfenv(1, P)
 
 function generateScreens(numScreens, width, height)
@@ -16,13 +17,15 @@ function generateScreens(numScreens, width, height)
         flipped = false
         if i == 1 then
             -- Always start with a layout walkable on the right side
-            layout = "right"
+            layout = "start"
         else
             -- Add a layout compatible with the last one
-            if layout == "right" then 
+            if layout == "right" or layout == "start" then 
                 coin = love.math.random(0, 1)
                 if coin == 1 then
                     layout = "rightToLeft"
+                else
+                    layout = "right"
                 end
             elseif layout == "left" then
                 flipped = true
@@ -37,6 +40,7 @@ function generateScreens(numScreens, width, height)
                 layout = "left"
             end
         end
+        print(layout)
         left, right = getImages(layout)
         screens[i] = gameScreen.GameScreen:new{width = width, height = height, xPos = 0, yPos = (i - 1)*600, left = left, right = right, flipped = flipped, layout = layout}
     end
@@ -45,7 +49,10 @@ function generateScreens(numScreens, width, height)
 end
 
 function getImages(layout)
-    if layout == "right" then
+    if layout == "start" then
+        left = loadBlocked()
+        right = loadWalkableStart()
+    elseif layout == "right" then
         left = loadBlocked()
         right = loadWalkable()
     elseif layout == "left" then
@@ -60,6 +67,11 @@ function getImages(layout)
     end
 
     return left, right
+end
+
+function loadWalkableStart()
+    local image = love.graphics.newImage("resources/images/walkable/start.png")
+    return image
 end
 
 function loadWalkable()

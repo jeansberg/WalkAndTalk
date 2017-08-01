@@ -37,18 +37,12 @@ function GameScreen:draw()
     love.graphics.draw(self.right, self.width/2 + xOffset, self.yPos, 0, scale, 1)
 end
 
-function GameScreen:getDimensions()
-
-    
---[[
+function GameScreen:getBarrier()
     if self.layout == "left" then
-        return {xPos = self.width/2, yPos = self.position, width = 200, height = 600}
-    elseif self.layout == "right" then
-        return {xPos = 0, yPos = self.position, width = 200, height = 600}
-    elseif self.layout == "finish" then
-        return {xPos = 0, yPos = self.position, width = 400, height = 600}
+        return {xPos = self.width/2, yPos = self.yPos, width = 200, height = 600}
+    elseif self.layout == "right" or self.layout == "start" then
+        return {xPos = 0, yPos = self.yPos, width = 200, height = 600}
     else
         return nil
     end
-    ]]
 end
