@@ -12,7 +12,7 @@ local print = print
 local setmetatable = setmetatable
 setfenv(1, P)
 
-Character = {width = 32, height = 32}
+Character = {width = 24, height = 32}
 
 function Character:new(o)
     local o = o or {}
