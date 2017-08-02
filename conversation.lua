@@ -144,15 +144,16 @@ end
 -- Draws the current topic and the rest of the conversation UI.
 -------------------------------------
 function draw()
+    drawBackground()
     love.graphics.printf(finalComment, 500, 50, 200)
 
     if topic then
         love.graphics.printf(comment, 500, 50, 200)
 
-        love.graphics.printf(topPosition, 510, 200, 180)
-        love.graphics.printf(rightPosition, 610, 300, 180)
-        love.graphics.printf(bottomPosition, 510, 400, 180)
-        love.graphics.printf(leftPosition, 410, 300, 180)
+        love.graphics.printf(topPosition, 515, 205, 175)
+        love.graphics.printf(rightPosition, 615, 305, 175)
+        love.graphics.printf(bottomPosition, 515, 405, 175)
+        love.graphics.printf(leftPosition, 415, 305, 175)
     end
 end
 
@@ -253,4 +254,15 @@ function deepcopy(orig)
         copy = orig
     end
     return copy
+end
+
+function drawBackground()
+    love.graphics.setColor(255, 150, 150, 255)
+    love.graphics.rectangle("fill", 400, 0, 400, 600)
+    love.graphics.setColor(255, 255, 255, 255)
+
+    love.graphics.rectangle("line", 510, 200, 180, 50)
+    love.graphics.rectangle("line", 610, 300, 180, 50)
+    love.graphics.rectangle("line", 510, 400, 180, 50)
+    love.graphics.rectangle("line", 410, 300, 180, 50)
 end
