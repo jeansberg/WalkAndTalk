@@ -26,15 +26,14 @@ function checkOverlap(rect1, rect2)
 end
 
 function resolveCollision(rect1, rect2, scrollSpeed, dt)
-    movedX = rect1.dx * dt
-    movedY = rect1.dy * dt
-
     if rect1.dx > 0 then
         -- Moving right
         rect1.xPos = rect2.xPos - rect1.width
+        return
     elseif rect1.dx < 0 then
         -- Moving left
         rect1.xPos = rect2.xPos + rect2.width
+        return
     end
 
     if rect1.dy > 0  then
