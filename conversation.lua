@@ -194,8 +194,16 @@ function getNewAnswer(usedAnswers)
     return answer
 end
 
-function interrupt(final)
-    finalComment = final
+function interrupt(gameState)
+    if gameState == "WrongAnswer" then
+        finalComment = "You're not listening! Will you please stop daydreaming?"
+    elseif gameState == "NearMiss" then
+        finalComment = "Watch out! You're always dreaming!"
+    elseif gameState == "EatenByScroll" then
+        finalComment = "Catch up! Stop daydreaming!"
+    elseif gameState == "Finished" then
+        finalComment = "We're here. Thank you for the company!"
+    end
     comment = ""
     topPosition = ""
     rightPosition = ""

@@ -12,7 +12,9 @@ require "character"
 walkingScreenWidth = love.graphics.getWidth() / 2
 screenHeight = 600
 playerSpeed = 120
-friendSpeed = 100
+friendSpeed = 80
+carSpeed = 600
+carWidth = 210
 scrollSpeed = 100
 numScreens = 10
 frameSide = 32
@@ -23,11 +25,11 @@ friendStartY = screenHeight/4
 restartTimerMax = 5
 restartTimer = 0
 restarting = false
-finalComment = ""
 
 function love.load()
     playerImage = love.graphics.newImage("resources/images/player.png")
     friendImage = love.graphics.newImage("resources/images/friend.png")
+    carImage = love.graphics.newImage("resources/images/car.png")
     imageWidth = playerImage:getWidth()
     imageHeight = playerImage:getHeight()
 
@@ -39,7 +41,7 @@ function love.load()
 
     player = character.Character:new{xPos = playerStartX, yPos = playerStartY, speed = playerSpeed, animations = playerAnimations, frames = playerFrames, image = playerImage}
     friend = character.Character:new{xPos = friendStartX, yPos = friendStartY, speed = friendSpeed, animations = friendAnimations, frames = friendFrames, image = friendImage}
-
+    car = {xPos = walkingScreenWidth + carWidth, yPos = screenHeight, image = carImage}
 
     screens = {}
 
@@ -48,9 +50,11 @@ function love.load()
 end
 
 function startGame()
+    gameState = "Running"
     conversation.reset()
     player:reset()
     friend:reset()
+    car = {xPos = walkingScreenWidth + carWidth, yPos = screenHeight, image = carImage}
 
     screens = gameLevel.generateScreens(numScreens, walkingScreenWidth, screenHeight)
 end
@@ -60,6 +64,8 @@ function love.draw()
         screens[i]:draw()
     end
 
+    love.graphics.draw(car.image, car.xPos, car.yPos, 0, -1, 1)
+
     love.graphics.draw(player.image, player.frames[player.animations[player.currentAnimation].currentFrame], player.xPos, player.yPos)
     love.graphics.draw(friend.image, friend.frames[friend.animations[friend.currentAnimation].currentFrame], friend.xPos, friend.yPos)
     conversation.draw()
@@ -67,9 +73,10 @@ end
 
 function love.update(dt)
     if restarting then
-        conversation.interrupt(finalComment)
+        conversation.interrupt(gameState)
         if restartTimer < restartTimerMax then
             restartTimer = restartTimer + dt
+            updateEnding(dt)
         else
             restartTimer = 0
             restarting = false
@@ -79,7 +86,8 @@ function love.update(dt)
         success = conversation.update(dt)
 
         if not success then
-            restart("You're not listening! Will you please stop daydreaming?")
+            gameState = "WrongAnswer"
+            restart()
         end
 
         updateCharacter(friend, dt, getFriendDirections)
@@ -144,7 +152,8 @@ function moveCharacter(char, dt)
             char.screenLayout = screen.layout
 
             if char == player and char.screenLayout == "finish" then
-                restart("We're here. Thank you for the company!")
+                gameState = "Finished"
+                restart("")
             end
             
             for j = 1, table.getn(screens) do
@@ -158,7 +167,9 @@ function moveCharacter(char, dt)
                     local hazard = screens[j]:getHazard()
                     if hazard then
                         if collisions.checkOverlap(char, hazard) then
-                            restart("Watch out! You're always dreaming!")
+                            gameState = "NearMiss"
+                            player.hazard = hazard
+                            restart()
                         end
                     end
                 end
@@ -167,7 +178,8 @@ function moveCharacter(char, dt)
     end
 
     if char == player and char.yPos < 0 then
-        restart("Catch up! Stop daydreaming!")
+        gameState = "EatenByScroll"
+        restart()
     end
 end
 
@@ -188,13 +200,30 @@ end
 
 function setFriendSpeed()
     if friend.yPos < screenHeight / 2 then
-        friend.speed = 120
+        friend.speed = friendSpeed * 1.2
     else
-        friend.speed = 100
+        friend.speed = friendSpeed
     end
 end
 
-function restart(comment)
-    finalComment = comment
+function restart()
     restarting = true
+end
+
+function updateEnding(dt)
+    if gameState == "NearMiss" then
+        updateCar(dt)
+    end
+end
+
+function updateCar(dt)
+    if player.yPos < player.hazard.yPos + 300 then
+        car.yPos = player.yPos
+    else
+        car.yPos = player.hazard.yPos + 300
+    end
+    
+    if car.xPos > player.xPos + carWidth + player.width then
+        car.xPos = car.xPos - dt * carSpeed
+    end
 end
