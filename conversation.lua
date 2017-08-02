@@ -22,6 +22,7 @@ setfenv(1, P)
 -- Constants
 topicsPath = "resources/text/topics.txt"
 fillerPath = "resources/text/filler.txt"
+backgroundImage = love.graphics.newImage("resources/images/background.png")
 
 -------------------------------------
 -- Table for holding a conversation topic.
@@ -148,8 +149,12 @@ function draw()
     love.graphics.printf(finalComment, 500, 50, 200)
 
     if topic then
+        love.graphics.rectangle("line", 510, 200, 180, 50)
+        love.graphics.rectangle("line", 610, 300, 180, 50)
+        love.graphics.rectangle("line", 510, 400, 180, 50)
+        love.graphics.rectangle("line", 410, 300, 180, 50)
+        
         love.graphics.printf(comment, 500, 50, 200)
-
         love.graphics.printf(topPosition, 515, 205, 175)
         love.graphics.printf(rightPosition, 615, 305, 175)
         love.graphics.printf(bottomPosition, 515, 405, 175)
@@ -196,6 +201,7 @@ function getNewAnswer(usedAnswers)
 end
 
 function interrupt(gameState)
+    topic = nil
     if gameState == "WrongAnswer" then
         finalComment = "You're not listening! Will you please stop daydreaming?"
     elseif gameState == "NearMiss" then
@@ -257,12 +263,5 @@ function deepcopy(orig)
 end
 
 function drawBackground()
-    love.graphics.setColor(255, 150, 150, 255)
-    love.graphics.rectangle("fill", 400, 0, 400, 600)
-    love.graphics.setColor(255, 255, 255, 255)
-
-    love.graphics.rectangle("line", 510, 200, 180, 50)
-    love.graphics.rectangle("line", 610, 300, 180, 50)
-    love.graphics.rectangle("line", 510, 400, 180, 50)
-    love.graphics.rectangle("line", 410, 300, 180, 50)
+    love.graphics.draw(backgroundImage, 400, 0)
 end
