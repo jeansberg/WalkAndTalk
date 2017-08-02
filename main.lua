@@ -22,7 +22,7 @@ playerStartX = 3/4 * walkingScreenWidth - frameSide * 2
 playerStartY = screenHeight/4 - frameSide / 2
 friendStartX = 3/4 * walkingScreenWidth - frameSide
 friendStartY = screenHeight/4
-restartTimerMax = 5
+restartTimerMax = 3
 restartTimer = 0
 restarting = false
 
@@ -41,7 +41,7 @@ function love.load()
 
     player = character.Character:new{xPos = playerStartX, yPos = playerStartY, speed = playerSpeed, animations = playerAnimations, frames = playerFrames, image = playerImage}
     friend = character.Character:new{xPos = friendStartX, yPos = friendStartY, speed = friendSpeed, animations = friendAnimations, frames = friendFrames, image = friendImage}
-    car = {xPos = walkingScreenWidth + carWidth, yPos = screenHeight, image = carImage}
+    car = {xPos = walkingScreenWidth, yPos = screenHeight, image = carImage}
 
     screens = {}
 
@@ -64,8 +64,12 @@ function love.draw()
         screens[i]:draw()
     end
 
-    love.graphics.draw(car.image, car.xPos, car.yPos, 0, -1, 1)
-
+    if car.flipped then
+        love.graphics.draw(car.image, car.xPos, car.yPos, 0)
+    else
+        love.graphics.draw(car.image, car.xPos, car.yPos, 0, -1, 1)
+    end
+    
     love.graphics.draw(player.image, player.frames[player.animations[player.currentAnimation].currentFrame], player.xPos, player.yPos)
     love.graphics.draw(friend.image, friend.frames[friend.animations[friend.currentAnimation].currentFrame], friend.xPos, friend.yPos)
     conversation.draw()
@@ -167,6 +171,7 @@ function moveCharacter(char, dt)
                     local hazard = screens[j]:getHazard()
                     if hazard then
                         if collisions.checkOverlap(char, hazard) then
+                            positionCar()
                             gameState = "NearMiss"
                             player.hazard = hazard
                             restart()
@@ -216,14 +221,27 @@ function updateEnding(dt)
     end
 end
 
+function positionCar()
+    if string.find(player.screenLayout, "left") then
+        car.xPos = -carWidth
+    end
+end
+
 function updateCar(dt)
     if player.yPos < player.hazard.yPos + 300 then
         car.yPos = player.yPos
     else
         car.yPos = player.hazard.yPos + 300
     end
-    
-    if car.xPos > player.xPos + carWidth + player.width then
-        car.xPos = car.xPos - dt * carSpeed
+
+    if string.find(player.screenLayout, "left") then
+        car.flipped = true
+        if car.xPos < player.xPos - carWidth then
+            car.xPos = car.xPos + dt * carSpeed
+        end
+    else
+        if car.xPos > player.xPos + player.width + carWidth then
+            car.xPos = car.xPos - dt * carSpeed
+        end
     end
 end
