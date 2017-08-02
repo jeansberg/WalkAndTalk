@@ -21,16 +21,16 @@ function generateScreens(numScreens, width, height)
         else
             -- Add a layout compatible with the last one
             if layout == "right" or layout == "start" then 
-                coin = love.math.random(0, 1)
-                if coin == 1 then
+                coin = love.math.random(0, 2)
+                if coin > 0 then
                     layout = "rightToLeft"
                 else
                     layout = "right"
                 end
             elseif layout == "left" then
                 flipped = true
-                coin = love.math.random(0, 1)
-                if coin == 1 then
+                coin = love.math.random(0, 2)
+                if coin > 0 then
                     layout = "leftToRight"
                 end
             elseif layout == "leftToRight" then
