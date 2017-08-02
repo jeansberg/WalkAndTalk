@@ -12,9 +12,10 @@ require "character"
 walkingScreenWidth = love.graphics.getWidth() / 2
 screenHeight = 600
 playerSpeed = 120
-friendSpeed = 80
+friendSpeed = 100
 carSpeed = 600
 carWidth = 210
+carHeight = 83
 scrollSpeed = 100
 numScreens = 10
 frameSide = 32
@@ -228,10 +229,10 @@ function positionCar()
 end
 
 function updateCar(dt)
-    if player.yPos < player.hazard.yPos + 300 then
+    if player.yPos < player.hazard.yPos + 400 - carHeight then
         car.yPos = player.yPos
     else
-        car.yPos = player.hazard.yPos + 300
+        car.yPos = player.hazard.yPos + 400 - carHeight
     end
 
     if string.find(player.screenLayout, "left") then
