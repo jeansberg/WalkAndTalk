@@ -146,19 +146,21 @@ end
 -------------------------------------
 function draw()
     drawBackground()
-    love.graphics.printf(finalComment, 500, 50, 200)
+    
 
     if topic then
-        love.graphics.rectangle("line", 510, 200, 180, 50)
-        love.graphics.rectangle("line", 610, 300, 180, 50)
-        love.graphics.rectangle("line", 510, 400, 180, 50)
-        love.graphics.rectangle("line", 410, 300, 180, 50)
+        drawBoxes()
         
-        love.graphics.printf(comment, 500, 50, 200)
-        love.graphics.printf(topPosition, 515, 205, 175)
-        love.graphics.printf(rightPosition, 615, 305, 175)
-        love.graphics.printf(bottomPosition, 515, 405, 175)
-        love.graphics.printf(leftPosition, 415, 305, 175)
+        love.graphics.setNewFont(20)
+        love.graphics.printf(comment, 500, 50, 200, "center")
+        love.graphics.setNewFont(14)
+        love.graphics.printf(topPosition, 515, 205, 175, "center")
+        love.graphics.printf(rightPosition, 615, 305, 175, "center")
+        love.graphics.printf(bottomPosition, 515, 405, 175, "center")
+        love.graphics.printf(leftPosition, 415, 305, 175, "center")
+    else
+        love.graphics.setNewFont(20)
+        love.graphics.printf(finalComment, 500, 50, 200, center)
     end
 end
 
@@ -260,6 +262,13 @@ function deepcopy(orig)
         copy = orig
     end
     return copy
+end
+
+function drawBoxes()
+    love.graphics.rectangle("line", 510, 200, 180, 60)
+    love.graphics.rectangle("line", 610, 300, 180, 60)
+    love.graphics.rectangle("line", 510, 400, 180, 60)
+    love.graphics.rectangle("line", 410, 300, 180, 60)
 end
 
 function drawBackground()
