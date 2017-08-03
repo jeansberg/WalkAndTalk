@@ -9,10 +9,11 @@ character = P
 
 -- Imports
 local print = print
+local love = love
 local setmetatable = setmetatable
 setfenv(1, P)
 
-Character = {width = 24, height = 32}
+Character = {width = 28, height = 38}
 
 function Character:new(o)
     local o = o or {}
@@ -44,4 +45,8 @@ end
 
 function Character:right()
     return self.xPos + self.width
+end
+
+function Character:draw()
+    love.graphics.draw(self.image, self.frames[self.animations[self.currentAnimation].currentFrame], self.xPos, self.yPos, 0, 1.2, 1.2)
 end
