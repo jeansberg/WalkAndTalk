@@ -5,13 +5,12 @@ require "collisions"
 require "conversation"
 require "character"
 
-
 -----------------------------------------------------------------------------------------------------------------------
 -- Constants
 -----------------------------------------------------------------------------------------------------------------------
 walkingScreenWidth = love.graphics.getWidth() / 2
 screenHeight = 600
-playerSpeed = 120
+playerSpeed = 150
 friendSpeed = 100
 carSpeed = 600
 carWidth = 210
@@ -31,6 +30,7 @@ function love.load()
     playerImage = love.graphics.newImage("resources/images/player.png")
     friendImage = love.graphics.newImage("resources/images/friend.png")
     carImage = love.graphics.newImage("resources/images/car.png")
+
     imageWidth = playerImage:getWidth()
     imageHeight = playerImage:getHeight()
 
@@ -40,13 +40,17 @@ function love.load()
     local playerAnimations = {standing = animation.Animation:new(0, 1, 1), walking = animation.Animation:new(0.2, 2, 3)}
     local friendAnimations = {standing = animation.Animation:new(0, 1, 1), walking = animation.Animation:new(0.2, 2, 3)}
 
+    objects = {}
     player = character.Character:new{xPos = playerStartX, yPos = playerStartY, speed = playerSpeed, animations = playerAnimations, frames = playerFrames, image = playerImage}
     friend = character.Character:new{xPos = friendStartX, yPos = friendStartY, speed = friendSpeed, animations = friendAnimations, frames = friendFrames, image = friendImage}
     car = {xPos = walkingScreenWidth, yPos = screenHeight, image = carImage}
+    table.insert(objects, player)
+    table.insert(objects, friend)
+    table.insert(objects, car)
 
     screens = {}
 
-    conversation.init(5)
+    conversation.init(5, onNewTopic, onAnswer)
     startGame()
 end
 
@@ -71,12 +75,13 @@ function love.draw()
         love.graphics.draw(car.image, car.xPos, car.yPos, 0, -1, 1)
     end
     
-    love.graphics.draw(player.image, player.frames[player.animations[player.currentAnimation].currentFrame], player.xPos, player.yPos)
-    love.graphics.draw(friend.image, friend.frames[friend.animations[friend.currentAnimation].currentFrame], friend.xPos, friend.yPos)
+    player:draw()
+    friend:draw()
     conversation.draw()
 end
 
 function love.update(dt)
+    friend:update(dt)
     if restarting then
         conversation.interrupt(gameState)
         if restartTimer < restartTimerMax then
@@ -88,6 +93,8 @@ function love.update(dt)
             startGame()
         end
     else
+        player:update(dt)
+
         success = conversation.update(dt)
 
         if not success then
@@ -213,6 +220,7 @@ function setFriendSpeed()
 end
 
 function restart()
+    friend:showBubble("shout")
     restarting = true
 end
 
@@ -245,4 +253,12 @@ function updateCar(dt)
             car.xPos = car.xPos - dt * carSpeed
         end
     end
+end
+
+function onNewTopic()
+    friend:showBubble("speech")
+end
+
+function onAnswer()
+    player:showBubble("speech")
 end

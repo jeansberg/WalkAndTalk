@@ -33,3 +33,7 @@ function getConversationInput()
 
     return nil
 end
+
+function resetConversation()
+    lastKey = nil
+end

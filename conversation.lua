@@ -40,8 +40,10 @@ end
 -- Initializes the conversation engine.
 -- @param rate The rate at which new questions are generated.
 -------------------------------------
-function init(rate, _maxFailures)
-    topicRate = rate or 5
+function init(_maxFailures, _newTopicCallback, _answerCallback)
+    newTopicCallback = _newTopicCallback
+    answerCallback = _answerCallback
+    topicRate = 5
     maxFailures = _maxFailures or 3
 
     fillerAnswers = {}
@@ -91,11 +93,12 @@ function update(dt)
         updateTopic()
     end
 
+    local selectedAnswer = input.getConversationInput()
+
     if not topic then
+        input.resetConversation()
         return true
     end
-
-    local selectedAnswer = input.getConversationInput()
 
     if selectedAnswer then
         if not checkAnswer(selectedAnswer) then
@@ -115,6 +118,7 @@ end
 -- Gets a new topic and randomly assigns answers to positions
 -------------------------------------
 function updateTopic()
+    newTopicCallback()
     topic = generateTopic()
     local answers = {topic["answer"], topic["wrongAnswer1"], topic["wrongAnswer2"]}
     
@@ -128,6 +132,8 @@ function updateTopic()
 end
 
 function checkAnswer(selectedAnswer)
+    answerCallback()
+
     if selectedAnswer == "up" then
         return topic["answer"] == topPosition
     elseif selectedAnswer == "down" then
