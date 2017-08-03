@@ -28,12 +28,18 @@ end
 function resolveCollision(rect1, rect2, scrollSpeed, dt)
     if rect1.dx > 0 then
         -- Moving right
-        rect1.xPos = rect2.xPos - rect1.width
-        return
+        local destX = rect2.xPos - rect1.width
+        if rect1.xPos - destX < 10 then
+            rect1.xPos = destX
+            return
+        end
     elseif rect1.dx < 0 then
         -- Moving left
-        rect1.xPos = rect2.xPos + rect2.width
-        return
+        local destX = rect2.xPos + rect2.width
+        if destX - rect1.xPos < 10 then
+            rect1.xPos = destX
+            return
+        end
     end
 
     if rect1.dy > 0  then
