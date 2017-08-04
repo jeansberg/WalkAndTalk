@@ -71,7 +71,7 @@ function reset()
     cooldownTimer = 1
     remainingTopics = deepcopy(topics)
     comment = ""
-    finalComment = ""
+    finalComment = "Get ready!"
     attention = 100
 end
 
@@ -174,7 +174,7 @@ function draw()
         love.graphics.printf(leftPosition, 415, 305, 175, "center")
     else
         love.graphics.setNewFont(20)
-        love.graphics.printf(finalComment, 500, 50, 200, center)
+        love.graphics.printf(finalComment, 500, 50, 200, "center")
     end
 end
 
