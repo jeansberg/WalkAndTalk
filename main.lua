@@ -82,6 +82,7 @@ end
 
 function love.update(dt)
     friend:update(dt)
+    player:update(dt)
     if restarting then
         conversation.interrupt(gameState)
         if restartTimer < restartTimerMax then
@@ -93,8 +94,6 @@ function love.update(dt)
             startGame()
         end
     else
-        player:update(dt)
-
         success = conversation.update(dt)
 
         if not success then

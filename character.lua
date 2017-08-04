@@ -56,6 +56,8 @@ end
 function Character:reset()
     self.xPos = self.initialX
     self.yPos = self.initialY
+    self.bubbleVisible = false
+    self.bubbleTimer = 0
 end
 
 function Character:bottom()
