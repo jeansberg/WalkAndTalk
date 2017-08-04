@@ -1,10 +1,10 @@
-Isn't it nice out today?;It sure is.;fillerAllowed
-I saw my dad yesterday afternoon.;Oh, that's good. You don't see him often.;fillerAllowed
+Isn't it nice out today?;It sure is. I love that sun.;fillerAllowed
+I saw my dad yesterday afternoon.;Oh, that's good. You don't see your dad often.;fillerAllowed
 My parents had a big fight last week.;That's a shame. They normally get along so well.;fillerAllowed
-I think my mom and dad really do love each other.;Just like I love you.;fillerAllowed
+I think my mom and dad really do love each other.;That's probably why they've been married so long.;fillerAllowed
 My mom got a new haircut.;I just hope she didn't get it dyed pink again!;fillerAllowed
-Didn't my mom look awful when she had that pink hair?;Yeah, she did.;fillerAllowed
-I just love this time of year, don't you?;I really do.;fillerAllowed
+Didn't my mom look awful when she had that pink hair?;Yeah, she did. Pink doesn't suit her.;fillerAllowed
+I just love this time of year, don't you?;I really do. Not too hot, not too cold.;fillerAllowed
 Work was really rough last week.;Trouble in the office again? Poor thing.;fillerAllowed
 My boss is such a jerk.;I agree. He should appreciate your work more.;;fillerAllowed
 I'm thinking of reducing my hours in the office.;That's fair. You can work at home, too.;fillerAllowed
@@ -21,6 +21,11 @@ Do you like hamsters?;Yeah, they're adorable when they stuff their cheeks with f
 Do you like butterflies?;Sure. I saw the monarch migration once. Amazing.;true
 Do you like monkeys?;No, but I like apes. They're so much like us!;true
 Do you like worms?;Sure, for catching fish.;true
+Do you like cats or dogs more?;Cats, I suppose. They've got such interesting personalities.;false
+Do you like birds or snakes more?;I prefer birds, especially if they can talk.;false
+Do you like spiders or ants more?;Ants, obviously. Spiders are gross!;false
+Do you like hamsters or monkeys more?;For sure, I love monkeys. They're hilarious.;false
+Do you like butterflies or worms more?;That's a weird question. Butterflies are prettier, I guess.;false
 Do you like video games?;Of course! I grew up with Nintendo.;true
 Do you like cooking?;Nah, I can't make anything but spaghetti.;true
 Do you like drawing?;No. I can't even draw a straight line.;true
@@ -30,6 +35,10 @@ Do you like painting?;Too messy. I always get paint on my clothes.;true
 Do you like reading?;I love it! I get through a book a week.;true
 Do you like swimming?;No, I don't like going in the water.;true
 Do you like cycling?;Sometimes. I got one of those folding bikes.;true
+Do you like playing games or cooking more?;Games, duh! I'm a hardcore gamer.;false
+Do you like drawing or painting more?;I don't like the mess from painting, so drawing.;false
+Do you like hiking or running more?;I'd rather hike and get some fresh air in the mountains.;false
+Do you like reading or swimming more?;Why not do both at once? Everyone likes wet books, right?;false
 Do you like cheese?;Only cheddar and fresh mozzarella;true
 Do you like pizza?;Only thin crust, with lots of toppings.;true
 Do you like spaghetti?;Sure, it's the only Italian food I know how to cook.;true
@@ -41,13 +50,56 @@ Do you like raisins?;What's not to like about dried grapes?;true
 Do you like onions?;Yeah, but not raw. They give me bad breath.;true
 Do you like chocolate?;Who doesn't like chocolate?;true
 Do you like tacos?;Yeah, I love Mexican food!;true
+Do you like pizza or hamburgers more?;I'd rather have a cheesy pizza.;false
+Do you like raspberries or avocadoes more?Guacamole wins every time, so avodadoes.;false
+Do you like raisins or chocolate more?;Is that a serious question? Chocolate!;false
+Do you like tacos or spaghetti more?;Guacamole-drenched tacos for me, please.;false
 Do you like rap?;Some of it. The stuff that's like spoken word poetry.;true
 Do you like rock music?;Yeah, mostly old-school stuff like Van Halen.;true
 Do you like pop music?;Actually, I do. No one can honestly dislike Katy Perry, right?;true
 Do you like country music?;Ugh, no. Can't stand the sound of a steel guitar.;true
 Do you like electronic music?;Definitely. Techno, dubstep, all of that.;true
 Do you like reggae music?;Sure. It's good to relax to some Marley now and then.;true
+Do you like rap or rock music more?;I prefer rock in general, but I like rap too.;false
+Do you like pop or country music more?;I don't like country, so pop.;false
+Do you like electronic or reggae music more?;Depends on my mood. Reggae for home, electro for parties.;false
 What's your favorite animal?;Octopuses. They're one of the smartest animals on earth.;false
 What's your favorite hobby?;Knitting. My grandma taught me. It's surprisingly fun!;false
 What's your favorite food?;Sardines. I know, I know, most people hate them.;false
 Who's your favorite band?;Eels. Every one of their albums is different, but they're all great.;false
+My friend Taras got that job he was going for;Oh? That's great. Taras is a hard worker.;true
+My friend Taras sent me another new song.;Cool. His songs are always really good.;true
+Taras sent me a hilarious photo.;Was it one of his childhood photos? Those are funny.;true
+Taras wants us all to play that new MMO together.;Cool, I'm always up for a bit of multiplayer.;true
+What do you think of my friend Taras?;I think he's cool. He's always nice to talk to.;false
+My friend Lenka is pregnant.;Again? How many kids does she have now?;true
+My friend Lenka is taking her kids hiking this weekend.;Going hiking must be tough with those little ones.;true
+Lenka finally beat my high score at Tricky Towers.;Did she? I thought you'd have the top score forever.;true
+Lenka wants me to join her yoga class.;You should try it. Yoga is really healthy.;true
+What do you think of my friend Lenka?;She's cool. Great mom and awesome gamer.;false
+Do you like watching streamers on Twitch?;I prefer Mixer, but Twitch is okay.;true
+Do you like watching let's plays on YouTube?;Only when the videos don't have any ads.;true
+Do you like Minecraft?;Blocks and creepers? What's not to like?;true
+Do you like Call of Duty?;Not really. I'm not into pretending to shoot people.;true
+Do you like Stardew Valley?;Absolutely. I loved Harvest Moon, and Stardew is even better.;true
+Do you like horror games?;Sure. I love being scared by games.;true
+Do you like adventure games?;Yeah, especially old school ones from LucasArts.;true
+What's your favorite game?;I can't chose just one. I have so many games!;false
+What's your favorite genre of game?;Probably just indie games in general. Small, unusual titles.;false
+Who's your favorite YouTuber?;Aira Plays Games. She's entertaining and the videos are good quality.;false
+Who's your favorite streamer?;On Twitch, I like jarxjam. He's amazing, always entertaining.;false
+Have you heard of Jens Genberg?;Sure, he has some really helpful articles on dev.to.;false
+Ugh, I'm so tired.;Me, too. I hardly slept last night.;true
+I'm kind of hungry.;I could eat, too. Maybe we should get some lunch.;true
+I hate it when parents let their kids run wild.;Well, but you don't know what it's like to have kids.;true
+I can't wait to watch the new episode of Adventure Time.;Me, too. The fun never ends, Adventure Time!;true
+I'm looking forward to my trip to Prague.;Yeah, you'll have fun in the Czech Republic.;true
+I wonder what I should pack for my trip...;Best to check the weather forecast, then pack appropriately.;true
+I have to remember to charge my camera battery before I go on my trip.;I'm sure you can charge it when you get there.;true
+I'm going to take so many photos on my trip!;Great. I can't wait to look at them when you get back.;true
+We're planning a board game day at the cafe soon.;Oh, let me know when. I love board games.;true
+We're planning a card game day at the cafe soon.;Oh, let me know when. I love card games.;true
+We're planning a party at the cafe soon.;Cool. I'm always up for a party.;true
+We're planning a board game day soon. What game do you want to play?;How about Cataan? That's a great one.;false
+We're planning a card game day soon. What game do you want to play?;Poker, obviously. I used to play in tournaments.;false
+We're planning a party soon. Should we hire a DJ or a band?;I'd go for a DJ. They can play lots of stuff.;false
