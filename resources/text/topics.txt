@@ -11,3 +11,43 @@ I'm thinking of reducing my hours in the office.;That's fair. You can work at ho
 What do you think of my haircut?;I think it looks wonderful.
 How long have your parents been married now?;Almost thirty years.
 How would you tell your boss you want to change your schedule?;I'd just be direct and honest.
+Do you like cats?;Sure, I love how they purr.;true
+Do you like dogs?;They're alright, but I don't like the barking.;true
+Do you like birds?;Only the ones that can talk, like parrots.;true
+Do you like snakes?;I suppose it's cool that the smell with their tongues.;true
+Do you like spiders?;No, I don't like anything with more than seven legs.;true
+Do you like ants?;I like the video game SimAnt. Not sure about real ones.;true
+Do you like hamsters?;Yeah, they're adorable when they stuff their cheeks with food.;true
+Do you like butterflies?;Sure. I saw the monarch migration once. Amazing.;true
+Do you like monkeys?;No, but I like apes. They're so much like us!;true
+Do you like worms?;Sure, for catching fish.;true
+Do you like video games?;Of course! I grew up with Nintendo.;true
+Do you like cooking?;Nah, I can't make anything but spaghetti.;true
+Do you like drawing?;No. I can't even draw a straight line.;true
+Do you like hiking?;Absolutely, especially the trails in the mountains.;true
+Do you like running?;No way. I have asthma. And I'm lazy.;true
+Do you like painting?;Too messy. I always get paint on my clothes.;true
+Do you like reading?;I love it! I get through a book a week.;true
+Do you like swimming?;No, I don't like going in the water.;true
+Do you like cycling?;Sometimes. I got one of those folding bikes.;true
+Do you like cheese?;Only cheddar and fresh mozzarella;true
+Do you like pizza?;Only thin crust, with lots of toppings.;true
+Do you like spaghetti?;Sure, it's the only Italian food I know how to cook.;true
+Do you like hamburgers?;I prefer cheeseburgers, but hamburgers are okay I guess.;true
+Do you like raspberries?;Ugh, no. The little seeds always get stuck in my teeth.;true
+Do you like avocadoes?;Aw, yeah. I love me some guacamole.;true
+Do you like meat?;Yeah, I'm not a vegetarian.;true
+Do you like raisins?;What's not to like about dried grapes?;true
+Do you like onions?;Yeah, but not raw. They give me bad breath.;true
+Do you like chocolate?;Who doesn't like chocolate?;true
+Do you like tacos?;Yeah, I love Mexican food!;true
+Do you like rap?;Some of it. The stuff that's like spoken word poetry.;true
+Do you like rock music?;Yeah, mostly old-school stuff like Van Halen.;true
+Do you like pop music?;Actually, I do. No one can honestly dislike Katy Perry, right?;true
+Do you like country music?;Ugh, no. Can't stand the sound of a steel guitar.;true
+Do you like electronic music?;Definitely. Techno, dubstep, all of that.;true
+Do you like reggae music?;Sure. It's good to relax to some Marley now and then.;true
+What's your favorite animal?;Octopuses. They're one of the smartest animals on earth.;false
+What's your favorite hobby?;Knitting. My grandma taught me. It's surprisingly fun!;false
+What's your favorite food?;Sardines. I know, I know, most people hate them.;false
+Who's your favorite band?;Eels. Every one of their albums is different, but they're all great.;false
