@@ -19,6 +19,7 @@ Character = gameObject.GameObject:new{width = 28, height = 38, bubbleTimer = 0}
 
 speechImage = love.graphics.newImage("resources/images/speech.png")
 shoutImage = love.graphics.newImage("resources/images/shout.png")
+heartImage = love.graphics.newImage("resources/images/heart.png")
 bubbleTimerMax = 1.5
 
 function Character:new(o)
@@ -94,8 +95,10 @@ end
 function Character:showBubble(bubbleType)
     if bubbleType == "speech" then
         self.bubbleImage = speechImage
-    else
+    elseif bubbleType == "shout" then
         self.bubbleImage = shoutImage
+    else
+        self.bubbleImage = heartImage
     end
     self.bubbleTimer = 0
     self.bubbleVisible = true

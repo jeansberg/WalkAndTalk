@@ -50,7 +50,7 @@ function love.load()
 
     screens = {}
 
-    conversation.init(5, onNewTopic, onAnswer)
+    conversation.init(onNewTopic, onAnswer)
     startGame()
 end
 
@@ -219,7 +219,12 @@ function setFriendSpeed()
 end
 
 function restart()
-    friend:showBubble("shout")
+    if gameState == "Finished" then
+        friend:showBubble("heart")
+    else
+        friend:showBubble("shout")
+    end
+
     restarting = true
 end
 

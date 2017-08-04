@@ -40,12 +40,11 @@ end
 -- Initializes the conversation engine.
 -- @param rate The rate at which new questions are generated.
 -------------------------------------
-function init(_maxFailures, _newTopicCallback, _answerCallback)
+function init(_newTopicCallback, _answerCallback)
     newTopicCallback = _newTopicCallback
     answerCallback = _answerCallback
-    topicRate = 5
-    maxFailures = _maxFailures or 3
-
+    topicRate = 3
+    
     fillerAnswers = {}
     for line in love.filesystem.lines(fillerPath) do
         table.insert(fillerAnswers, line)
@@ -68,11 +67,12 @@ end
 -------------------------------------
 function reset()
     math.randomseed(os.time())
-    failures = 0
     timer = topicRate
+    cooldownTimer = 1
     remainingTopics = deepcopy(topics)
     comment = ""
     finalComment = ""
+    attention = 100
 end
 
 -------------------------------------
@@ -80,14 +80,19 @@ end
 -- @param dt Time passed in seconds since the last update call.
 -------------------------------------
 function update(dt)
+    print(attention)
     if table.getn(remainingTopics) == 0 then
         remainingTopics = deepcopy(topics)
+    end
+
+    if cooldownTimer > 0 then
+        cooldownTimer = cooldownTimer - dt
     end
 
     if timer > 0 then
         timer = timer - dt
     elseif topic then
-        failures = failures + 1
+        modifyAttention(-34)
         updateTopic()
     else
         updateTopic()
@@ -102,12 +107,12 @@ function update(dt)
 
     if selectedAnswer then
         if not checkAnswer(selectedAnswer) then
-            failures = failures + 1
+            modifyAttention(-34)
         end
         updateTopic()
     end
 
-    if failures == maxFailures then
+    if attention <= 0 then
         return false
     end
 
@@ -134,14 +139,17 @@ end
 function checkAnswer(selectedAnswer)
     answerCallback()
 
-    if selectedAnswer == "up" then
-        return topic["answer"] == topPosition
-    elseif selectedAnswer == "down" then
-        return topic["answer"] == bottomPosition
-    elseif selectedAnswer == "left" then
-        return topic["fillerAllowed"]
-    elseif selectedAnswer == "right" then
-        return topic["answer"] == rightPosition
+    if selectedAnswer == "up" and topic["answer"] == topPosition then
+            modifyAttention(17)
+            return true
+    elseif selectedAnswer == "down" and topic["answer"] == bottomPosition then
+            modifyAttention(17)
+            return true 
+    elseif selectedAnswer == "left" and topic["fillerAllowed"] then
+            return true 
+    elseif selectedAnswer == "right" and topic["answer"] == rightPosition then
+            modifyAttention(17)
+            return true 
     end
 
     return false
@@ -152,7 +160,7 @@ end
 -------------------------------------
 function draw()
     drawBackground()
-    
+    drawMeters()
 
     if topic then
         drawBoxes()
@@ -279,4 +287,26 @@ end
 
 function drawBackground()
     love.graphics.draw(backgroundImage, 400, 0)
+end
+
+function drawMeters()
+    if attention > 0 then
+        love.graphics.setColor(0, 255, 0, 255)
+        love.graphics.rectangle("fill", 400, 575, attention*4, 20)
+    end
+
+    if timer > 0 then
+        love.graphics.setColor(255, 0, 0, 255)
+        love.graphics.rectangle("fill", 400, 550, (timer / topicRate) * 400, 20)
+    end
+
+    love.graphics.setColor(255, 255, 255, 255)
+end
+
+function modifyAttention(value)
+    if value > 0 then
+        attention = math.min(attention + value, 100)
+    elseif value < 0 then
+        attention = math.max(attention + value, 0)
+    end
 end
