@@ -1,13 +1,13 @@
-Isn't it nice out today?;It sure is. I love that sun.;fillerAllowed
-I saw my dad yesterday afternoon.;Oh, that's good. You don't see your dad often.;fillerAllowed
-My parents had a big fight last week.;That's a shame. They normally get along so well.;fillerAllowed
-I think my mom and dad really do love each other.;That's probably why they've been married so long.;fillerAllowed
-My mom got a new haircut.;I just hope she didn't get it dyed pink again!;fillerAllowed
-Didn't my mom look awful when she had that pink hair?;Yeah, she did. Pink doesn't suit her.;fillerAllowed
-I just love this time of year, don't you?;I really do. Not too hot, not too cold.;fillerAllowed
-Work was really rough last week.;Trouble in the office again? Poor thing.;fillerAllowed
-My boss is such a jerk.;I agree. He should appreciate your work more.;;fillerAllowed
-I'm thinking of reducing my hours in the office.;That's fair. You can work at home, too.;fillerAllowed
+Isn't it nice out today?;It sure is. I love that sun.;true
+I saw my dad yesterday afternoon.;Oh, that's good. You don't see your dad often.;true
+My parents had a big fight last week.;That's a shame. They normally get along so well.;true
+I think my mom and dad really do love each other.;That's probably why they've been married so long.;true
+My mom got a new haircut.;I just hope she didn't get it dyed pink again!;true
+Didn't my mom look awful when she had that pink hair?;Yeah, she did. Pink doesn't suit her.;true
+I just love this time of year, don't you?;I really do. Not too hot, not too cold.;true
+Work was really rough last week.;Trouble in the office again? Poor thing.;true
+My boss is such a jerk.;I agree. He should appreciate your work more.;true
+I'm thinking of reducing my hours in the office.;That's fair. You can work at home, too.;true
 What do you think of my haircut?;I think it looks wonderful.
 How long have your parents been married now?;Almost thirty years.
 How would you tell your boss you want to change your schedule?;I'd just be direct and honest.
