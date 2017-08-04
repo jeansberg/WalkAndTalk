@@ -43,7 +43,7 @@ end
 function init(_newTopicCallback, _answerCallback)
     newTopicCallback = _newTopicCallback
     answerCallback = _answerCallback
-    topicRate = 3
+    topicRate = 2
     
     fillerAnswers = {}
     for line in love.filesystem.lines(fillerPath) do
