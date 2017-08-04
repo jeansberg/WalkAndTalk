@@ -291,16 +291,19 @@ end
 
 function drawMeters()
     if attention > 0 then
-        love.graphics.setColor(0, 255, 0, 255)
-        love.graphics.rectangle("fill", 400, 575, attention*4, 20)
+        love.graphics.setColor(26, 99, 24, 255)
+        love.graphics.rectangle("fill", 400, 565, attention*4, 25)
     end
 
     if timer > 0 then
-        love.graphics.setColor(255, 0, 0, 255)
-        love.graphics.rectangle("fill", 400, 550, (timer / topicRate) * 400, 20)
+        love.graphics.setColor(190, 52, 58, 255)
+        love.graphics.rectangle("fill", 400, 530, (timer / topicRate) * 400, 25)
     end
 
     love.graphics.setColor(255, 255, 255, 255)
+    love.graphics.setNewFont(14)
+    love.graphics.printf("Timer", 400, 535, 400, "center")
+    love.graphics.printf("Attention", 400, 570, 400, "center")
 end
 
 function modifyAttention(value)
