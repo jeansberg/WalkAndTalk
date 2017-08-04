@@ -23,6 +23,8 @@ setfenv(1, P)
 topicsPath = "resources/text/topics.txt"
 fillerPath = "resources/text/filler.txt"
 backgroundImage = love.graphics.newImage("resources/images/background.png")
+rightAnswer = love.audio.newSource("resources/sound/Collect_Point_00.mp3")
+wrongAnswer = love.audio.newSource("resources/sound/Hit_02.mp3")
 
 -------------------------------------
 -- Table for holding a conversation topic.
@@ -92,6 +94,7 @@ function update(dt)
     if timer > 0 then
         timer = timer - dt
     elseif topic then
+        love.audio.play(wrongAnswer)
         modifyAttention(-34)
         updateTopic()
     else
@@ -106,7 +109,12 @@ function update(dt)
     end
 
     if selectedAnswer then
-        if not checkAnswer(selectedAnswer) then
+        if checkAnswer(selectedAnswer) then
+            love.audio.rewind(rightAnswer)
+            love.audio.play(rightAnswer)
+        else
+            love.audio.rewind(wrongAnswer)
+            love.audio.play(wrongAnswer)
             modifyAttention(-34)
         end
         updateTopic()

@@ -30,6 +30,10 @@ function love.load()
     playerImage = love.graphics.newImage("resources/images/player.png")
     friendImage = love.graphics.newImage("resources/images/friend.png")
     carImage = love.graphics.newImage("resources/images/car.png")
+    victory = love.audio.newSource("resources/sound/Jingle_Win_01.mp3")
+    failure = love.audio.newSource("resources/sound/Jingle_Lose_01.mp3")
+    skid = love.audio.newSource("resources/sound/skid.mp3")
+    music = love.audio.newSource("resources/sound/Sound Way NES.mp3")
 
     imageWidth = playerImage:getWidth()
     imageHeight = playerImage:getHeight()
@@ -55,6 +59,9 @@ function love.load()
 end
 
 function startGame()
+    music:setVolume(0.5)
+    love.audio.rewind(music)
+    love.audio.play(music)
     gameState = "Running"
     conversation.reset()
     player:reset()
@@ -178,6 +185,7 @@ function moveCharacter(char, dt)
                     local hazard = screens[j]:getHazard()
                     if hazard then
                         if collisions.checkOverlap(char, hazard) then
+                            love.audio.play(skid)
                             positionCar()
                             gameState = "NearMiss"
                             player.hazard = hazard
@@ -219,9 +227,12 @@ function setFriendSpeed()
 end
 
 function restart()
+    love.audio.stop(music)
     if gameState == "Finished" then
         friend:showBubble("heart")
+        love.audio.play(victory)
     else
+        love.audio.play(failure)
         friend:showBubble("shout")
     end
 
