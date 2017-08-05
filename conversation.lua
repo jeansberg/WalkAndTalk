@@ -82,7 +82,6 @@ end
 -- @param dt Time passed in seconds since the last update call.
 -------------------------------------
 function update(dt)
-    print(attention)
     if table.getn(remainingTopics) == 0 then
         remainingTopics = deepcopy(topics)
     end
