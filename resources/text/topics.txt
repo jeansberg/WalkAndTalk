@@ -8,9 +8,9 @@ I just love this time of year, don't you?;I really do. Not too hot, not too cold
 Work was really rough last week.;Trouble in the office again? Poor thing.;true
 My boss is such a jerk.;I agree. He should appreciate your work more.;true
 I'm thinking of reducing my hours in the office.;That's fair. You can work at home, too.;true
-What do you think of my haircut?;I think it looks wonderful.
-How long have your parents been married now?;Almost thirty years.
-How would you tell your boss you want to change your schedule?;I'd just be direct and honest.
+What do you think of my haircut?;I think it looks wonderful.;false
+How long have your parents been married now?;Almost thirty years.;false
+How would you tell your boss you want to change your schedule?;I'd just be direct and honest.;false
 Do you like cats?;Sure, I love how they purr.;true
 Do you like dogs?;They're alright, but I don't like the barking.;true
 Do you like birds?;Only the ones that can talk, like parrots.;true
@@ -51,7 +51,7 @@ Do you like onions?;Yeah, but not raw. They give me bad breath.;true
 Do you like chocolate?;Who doesn't like chocolate?;true
 Do you like tacos?;Yeah, I love Mexican food!;true
 Do you like pizza or hamburgers more?;I'd rather have a cheesy pizza.;false
-Do you like raspberries or avocadoes more?Guacamole wins every time, so avodadoes.;false
+Do you like raspberries or avocadoes more?;Guacamole wins every time, so avodadoes.;false
 Do you like raisins or chocolate more?;Is that a serious question? Chocolate!;false
 Do you like tacos or spaghetti more?;Guacamole-drenched tacos for me, please.;false
 Do you like rap?;Some of it. The stuff that's like spoken word poetry.;true
