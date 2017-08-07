@@ -51,7 +51,7 @@ Do you like onions?;Yeah, but not raw. They give me bad breath.;true
 Do you like chocolate?;Who doesn't like chocolate?;true
 Do you like tacos?;Yeah, I love Mexican food!;true
 Do you like pizza or hamburgers more?;I'd rather have a cheesy pizza.;false
-Do you like raspberries or avocadoes more?Guacamole wins every time, so avodadoes.;false
+Do you like raspberries or avocadoes more?;Guacamole wins every time, so avodadoes.;false
 Do you like raisins or chocolate more?;Is that a serious question? Chocolate!;false
 Do you like tacos or spaghetti more?;Guacamole-drenched tacos for me, please.;false
 Do you like rap?;Some of it. The stuff that's like spoken word poetry.;true
