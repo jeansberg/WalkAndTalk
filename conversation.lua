@@ -152,7 +152,7 @@ function checkAnswer(selectedAnswer)
     elseif selectedAnswer == "down" and topic["answer"] == bottomPosition then
             modifyAttention(17)
             return true 
-    elseif selectedAnswer == "left" and topic["fillerAllowed"] then
+    elseif selectedAnswer == "left" and topic["fillerAllowed"] == "true" then
             return true 
     elseif selectedAnswer == "right" and topic["answer"] == rightPosition then
             modifyAttention(17)
