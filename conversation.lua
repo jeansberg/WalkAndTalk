@@ -26,22 +26,22 @@ backgroundImage = love.graphics.newImage("resources/images/background.png")
 rightAnswer = love.audio.newSource("resources/sound/Collect_Point_00.mp3")
 wrongAnswer = love.audio.newSource("resources/sound/Hit_02.mp3")
 
--------------------------------------
 -- Table for holding a conversation topic.
--------------------------------------
 Topic = {}
 
-function Topic:new (o)
-    local o = o or {}
+function Topic:new(comment, answer, wrongAnswer1, wrongAnswer2, fillerAnswer, fillerAllowed)
+    local o = 
+    {comment = comment, answer = answer, 
+    wrongAnswer1 = wrongAnswer1, wrongAnswer2 = wrongAnswer2,
+    fillerAnswer = fillerAnswer, fillerAllowed = fillerAllowed}
+
     setmetatable(o, self)
     self.__index = self
     return o
 end
 
--------------------------------------
--- Initializes the conversation engine.
--- @param rate The rate at which new questions are generated.
--------------------------------------
+-- Initializes the conversation engine, which callback functions for notifying
+-- when a new topic is generated and when an answer is chosen
 function init(_newTopicCallback, _answerCallback)
     newTopicCallback = _newTopicCallback
     answerCallback = _answerCallback
@@ -64,9 +64,7 @@ function init(_newTopicCallback, _answerCallback)
     end
 end
 
--------------------------------------
 -- Resets the conversation engine.
--------------------------------------
 function reset()
     math.randomseed(os.time())
     timer = topicRate
@@ -77,10 +75,7 @@ function reset()
     attention = 100
 end
 
--------------------------------------
 -- Updates the state of the conversation engine.
--- @param dt Time passed in seconds since the last update call.
--------------------------------------
 function update(dt)
     if table.getn(remainingTopics) == 0 then
         remainingTopics = deepcopy(topics)
@@ -126,23 +121,24 @@ function update(dt)
     return true
 end
 
--------------------------------------
 -- Gets a new topic and randomly assigns answers to positions
--------------------------------------
 function updateTopic()
     newTopicCallback()
     topic = generateTopic()
+
     local answers = {topic["answer"], topic["wrongAnswer1"], topic["wrongAnswer2"]}
-    
+
     comment = topic["comment"]
     topPosition = popRandom(answers)
     rightPosition = popRandom(answers)
     bottomPosition = answers[1]
     leftPosition = topic["fillerAnswer"]
-
     timer = topicRate
 end
 
+-- Checks the selected answer against the correct answer
+-- Returns true if the answer is correct or
+-- if the filler answer is selected and filler answers are allowed
 function checkAnswer(selectedAnswer)
     answerCallback()
 
@@ -162,9 +158,7 @@ function checkAnswer(selectedAnswer)
     return false
 end
 
--------------------------------------
 -- Draws the current topic and the rest of the conversation UI.
--------------------------------------
 function draw()
     drawBackground()
     drawMeters()
@@ -185,31 +179,26 @@ function draw()
     end
 end
 
--------------------------------------
 -- Returns a new Topic instance from the remaining topics list.
--------------------------------------
 function generateTopic()
     local index = math.random(1, table.getn(remainingTopics))
     local newTopic = remainingTopics[index]
     local fillerAnswer = fillerAnswers[love.math.random(1, table.getn(fillerAnswers))]
     local wrongAnswer1 = getNewAnswer({newTopic["answer"]})
     local wrongAnswer2 = getNewAnswer({newTopic["answer"], wrongAnswer1})
-    local topic = {comment = newTopic["comment"], 
-        answer = newTopic["answer"],
-        wrongAnswer1 = wrongAnswer1,
-        wrongAnswer2 = wrongAnswer2, 
-        fillerAnswer = fillerAnswer, 
-        fillerAllowed = newTopic["fillerAllowed"]}
+    local topic = Topic:new(newTopic["comment"], 
+        newTopic["answer"],
+        wrongAnswer1,
+        wrongAnswer2, 
+        fillerAnswer, 
+        newTopic["fillerAllowed"])
     
     table.remove(remainingTopics, index)
-
     return topic
 end
 
--------------------------------------
 -- Returns a random answer from the topics table.
--- @param usedAnswers A table of answers that will be excluded.
--------------------------------------
+-- excluding answers that have already been selected.
 function getNewAnswer(usedAnswers)
     local answer = ""
     
@@ -223,6 +212,8 @@ function getNewAnswer(usedAnswers)
     return answer
 end
 
+-- Interrupts the conversation to show a comment
+-- depending on the game state that was reached
 function interrupt(gameState)
     topic = nil
     if gameState == "WrongAnswer" then
@@ -261,7 +252,7 @@ end
 -------------------------------------
 function popRandom(t)
     random = love.math.random(1, table.getn(t))
-    value = t[random]
+    local value = t[random]
     table.remove(t, random)
     return value
 end
@@ -285,6 +276,7 @@ function deepcopy(orig)
     return copy
 end
 
+-- Draws boxes around answers
 function drawBoxes()
     love.graphics.rectangle("line", 510, 200, 180, 60)
     love.graphics.rectangle("line", 610, 300, 180, 60)
@@ -292,10 +284,12 @@ function drawBoxes()
     love.graphics.rectangle("line", 410, 300, 180, 60)
 end
 
+-- Draws the background image
 function drawBackground()
     love.graphics.draw(backgroundImage, 400, 0)
 end
 
+-- Draws the timer and attention meters
 function drawMeters()
     if attention > 0 then
         love.graphics.setColor(26, 99, 24, 255)
@@ -313,6 +307,7 @@ function drawMeters()
     love.graphics.printf("Attention", 400, 570, 400, "center")
 end
 
+-- Updates the attention value without letting it go below 0 or above 100
 function modifyAttention(value)
     if value > 0 then
         attention = math.min(attention + value, 100)

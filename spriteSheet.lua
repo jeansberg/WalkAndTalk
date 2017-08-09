@@ -15,13 +15,14 @@ verticalPadding = 2
 
 SpriteSheet = {}
 
-function SpriteSheet:new(o)
-    local spriteSheet = getFrames(o.imageWidth, o.imageHeight, o.frameSide, o.numFrames)
+function SpriteSheet:new(imageWidth, imageHeight, frameSide, numFrames)
+    local o = getFrames(imageWidth, imageHeight, frameSide, numFrames)
     setmetatable(self, o)
     self.__index = self
-    return spriteSheet
+    return o
 end 
 
+-- Returns a list of frame as quads based on the image
 function getFrames(imageWidth, imageHeight, frameSide, numFrames)
     local frames = {}
     local rowCount = imageWidth / frameSide

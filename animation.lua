@@ -1,5 +1,5 @@
 -- Package: animation
--- This package contains the Animation table used to determine the current animation frame
+-- This package contains the Animation table used to update the current animation frame
 
 local P = {}
 animation = P
@@ -20,11 +20,13 @@ function Animation:new(timerMax, startFrame, endFrame)
     return o
 end
 
+-- Resets the animation frame and timer value
 function Animation:reset()
     self.currentFrame = self.startFrame
     self.timer = 0
 end
 
+-- Updates the animation frame based on delta time and the animation timer
 function Animation:update(dt)
     if self.timerMax == 0 then
         return

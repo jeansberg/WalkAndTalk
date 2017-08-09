@@ -15,24 +15,38 @@ local gameObject = gameObject
 local setmetatable = setmetatable
 setfenv(1, P)
 
-Character = gameObject.GameObject:new{width = 28, height = 38, bubbleTimer = 0}
-
+-- Constants
 speechImage = love.graphics.newImage("resources/images/speech.png")
 shoutImage = love.graphics.newImage("resources/images/shout.png")
 heartImage = love.graphics.newImage("resources/images/heart.png")
 bubbleTimerMax = 1.5
+scale = 1.2
 
-function Character:new(o)
-    local o = o or {}
+-- Character inherits from GameObject
+Character = gameObject.GameObject:new(0, 0, 28, 38)
+
+function Character:new(xPos, yPos, speed, animations, frames, image)
+    local o = {xPos = xPos, yPos = yPos, speed = speed, animations = animations, frames = frames, image = image}
     setmetatable(o, self)
     self.__index = self
+    -- Initial position can be used when resetting characters
     o.initialX = o.xPos
     o.initialY = o.yPos
-    o.currentAnimation = "standing"
+    o.bubbleTimer = 0
     o.bubbleVisible = false
+    o.currentAnimation = "standing"
     return o
 end
 
+-- Resets the character
+function Character:reset()
+    self.xPos = self.initialX
+    self.yPos = self.initialY
+    self.bubbleVisible = false
+    self.bubbleTimer = 0
+end
+
+-- Updates character logic
 function Character:update(dt)
     if not self.bubbleVisible then
         return
@@ -45,6 +59,7 @@ function Character:update(dt)
     end
 end
 
+-- Sets a new animation for the character
 function Character:setAnimation(animation)
     if(animation == self.currentAnimation) then
         return
@@ -54,44 +69,18 @@ function Character:setAnimation(animation)
     self.animations[animation]:reset()
 end
 
-function Character:reset()
-    self.xPos = self.initialX
-    self.yPos = self.initialY
-    self.bubbleVisible = false
-    self.bubbleTimer = 0
-end
-
-function Character:bottom()
-    return self.yPos + self.height
-end
-
-function Character:right()
-    return self.xPos + self.width
-end
-
+-- Draws the character
 function Character:draw()
-    love.graphics.draw(self.image, self.frames[self.animations[self.currentAnimation].currentFrame], self.xPos, self.yPos, 0, 1.2, 1.2)
+    -- Draws the current frame
+    love.graphics.draw(self.image, self.frames[self.animations[self.currentAnimation].currentFrame], self.xPos, self.yPos, 0, scale, scale)
         
+    -- Draws the speech bubble if one is visible
     if self.bubbleVisible then
-        local scale = 0.1
-        local dx = 30
-        local dy = 30
-
-        if self.bubbleImage == shoutImage then
-            scale = 0.2
-            dx = 80
-            dy = 80
-        end
-
-        love.graphics.draw(self.bubbleImage, 
-                           self.xPos - dx, 
-                           self.yPos -dy, 
-                           0, 
-                           scale, 
-                           scale)
+         love.graphics.draw(self.bubbleImage, self.xPos - self.bubbleImage:getWidth() * 0.75, self.yPos - self.bubbleImage:getHeight())
     end
 end
 
+-- Shows the specified type of speech bubble above the character
 function Character:showBubble(bubbleType)
     if bubbleType == "speech" then
         self.bubbleImage = speechImage

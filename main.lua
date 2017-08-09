@@ -38,15 +38,15 @@ function love.load()
     imageWidth = playerImage:getWidth()
     imageHeight = playerImage:getHeight()
 
-    local playerFrames = spriteSheet.SpriteSheet:new{imageWidth = imageWidth, imageHeight = imageHeight, frameSide = frameSide, numFrames = 3}
-    local friendFrames = spriteSheet.SpriteSheet:new{imageWidth = imageWidth, imageHeight = imageHeight, frameSide = frameSide, numFrames = 3}
+    local playerFrames = spriteSheet.SpriteSheet:new(imageWidth, imageHeight, frameSide, 3)
+    local friendFrames = spriteSheet.SpriteSheet:new(imageWidth, imageHeight, frameSide, 3)
 
     local playerAnimations = {standing = animation.Animation:new(0, 1, 1), walking = animation.Animation:new(0.2, 2, 3)}
     local friendAnimations = {standing = animation.Animation:new(0, 1, 1), walking = animation.Animation:new(0.2, 2, 3)}
 
     objects = {}
-    player = character.Character:new{xPos = playerStartX, yPos = playerStartY, speed = playerSpeed, animations = playerAnimations, frames = playerFrames, image = playerImage}
-    friend = character.Character:new{xPos = friendStartX, yPos = friendStartY, speed = friendSpeed, animations = friendAnimations, frames = friendFrames, image = friendImage}
+    player = character.Character:new(playerStartX, playerStartY, playerSpeed, playerAnimations, playerFrames, playerImage)
+    friend = character.Character:new(friendStartX, friendStartY, friendSpeed, friendAnimations, friendFrames, friendImage)
     car = {xPos = walkingScreenWidth, yPos = screenHeight, image = carImage}
     table.insert(objects, player)
     table.insert(objects, friend)
@@ -127,7 +127,6 @@ function updateCharacter(char, dt, getDirections)
     local directions = getDirections()
 
     local up, left, down, right = directions["up"], directions["left"], directions["down"], directions["right"]
-
     char.animations[char.currentAnimation]:update(dt)
 
     if not (up or left or down or right) then
