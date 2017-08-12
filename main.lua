@@ -160,7 +160,7 @@ function moveCharacter(char, dt)
     char.yPos = char.yPos + char.dy * dt
 
     if collisions.checkOverlap(player, friend) then
-        collisions.resolveCollision(player, friend, scrollSpeed, dt)
+        collisions.resolveCollision(player, friend, dt)
     end
 
     for i = 1, table.getn(screens) do

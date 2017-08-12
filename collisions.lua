@@ -29,7 +29,7 @@ end
 
 -- Resolves a collision between two rectangles by moving
 -- the first one back based on its speed
-function resolveCollision(rect1, rect2, scrollSpeed, dt)
+function resolveCollision(rect1, rect2, dt)
     if rect1.dx > 0 then
         -- Moving right
         local destX = rect2.xPos - rect1.width
@@ -50,7 +50,7 @@ function resolveCollision(rect1, rect2, scrollSpeed, dt)
         if rect1.yPos - destY < 5 then
             rect1.yPos = destY
         end
-    elseif rect1.dy < -scrollSpeed then
+    elseif rect1.dy < -0 then
         -- Moving up
         local destY = rect2.yPos + rect2.height
         if destY - rect1.yPos < 5 then
