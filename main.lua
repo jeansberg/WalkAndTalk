@@ -45,8 +45,8 @@ function love.load()
     local friendAnimations = {standing = animation.Animation:new(0, 1, 1), walking = animation.Animation:new(0.2, 2, 3)}
 
     objects = {}
-    player = character.Character:new(playerStartX, playerStartY, playerSpeed, playerAnimations, playerFrames, playerImage)
-    friend = character.Character:new(friendStartX, friendStartY, friendSpeed, friendAnimations, friendFrames, friendImage)
+    player = character.Character:new(playerStartX, playerStartY, 28, 10, playerSpeed, playerAnimations, playerFrames, playerImage)
+    friend = character.Character:new(friendStartX, friendStartY, 28, 10, friendSpeed, friendAnimations, friendFrames, friendImage)
     car = {xPos = walkingScreenWidth, yPos = screenHeight, image = carImage}
     table.insert(objects, player)
     table.insert(objects, friend)
@@ -82,8 +82,14 @@ function love.draw()
         love.graphics.draw(car.image, car.xPos, car.yPos, 0, -1, 1)
     end
     
-    player:draw()
-    friend:draw()
+    if( player.yPos > friend.yPos) then
+        friend:draw()
+        player:draw()
+    else
+        player:draw()
+        friend:draw()
+    end
+
     conversation.draw()
 end
 
