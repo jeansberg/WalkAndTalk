@@ -3,4 +3,4 @@
 
 This is an entry in My First Game Jam: Summer 2017
 
-The current release can be found at https://microbrood.itch.io/walkandtalk
+The current release can be found at https://microbrood.itch.io/walkandtalk.
