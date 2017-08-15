@@ -13,8 +13,8 @@ screenHeight = 600
 playerSpeed = 150
 friendSpeed = 100
 carSpeed = 600
-carWidth = 210
-carHeight = 83
+carWidth = 172
+carHeight = 56
 scrollSpeed = 100
 numScreens = 10
 frameSide = 32
@@ -28,8 +28,9 @@ restarting = false
 
 function love.load()
     playerImage = love.graphics.newImage("resources/images/player.png")
+    charImage = love.graphics.newImage("resources/images/character.png")
     friendImage = love.graphics.newImage("resources/images/friend.png")
-    carImage = love.graphics.newImage("resources/images/car.png")
+    carImage = love.graphics.newImage("resources/images/car2.png")
     victory = love.audio.newSource("resources/sound/Jingle_Win_01.mp3")
     failure = love.audio.newSource("resources/sound/Jingle_Lose_01.mp3")
     skid = love.audio.newSource("resources/sound/skid.mp3")
@@ -38,14 +39,14 @@ function love.load()
     imageWidth = playerImage:getWidth()
     imageHeight = playerImage:getHeight()
 
-    local playerFrames = spriteSheet.SpriteSheet:new(imageWidth, imageHeight, frameSide, 3)
-    local friendFrames = spriteSheet.SpriteSheet:new(imageWidth, imageHeight, frameSide, 3)
+    local playerFrames = spriteSheet.SpriteSheet:new(charImage:getWidth(), charImage:getHeight(), frameSide, 16, "columnsFirst")
+    local friendFrames = spriteSheet.SpriteSheet:new(imageWidth, imageHeight, frameSide, 3, "rowsFirst")
 
-    local playerAnimations = {standing = animation.Animation:new(0, 1, 1), walking = animation.Animation:new(0.2, 2, 3)}
+    local playerAnimations = {standing = animation.Animation:new(0, 2, 2), walking = animation.Animation:new(0.1, 1, 4)}
     local friendAnimations = {standing = animation.Animation:new(0, 1, 1), walking = animation.Animation:new(0.2, 2, 3)}
 
     objects = {}
-    player = character.Character:new(playerStartX, playerStartY, playerSpeed, playerAnimations, playerFrames, playerImage)
+    player = character.Character:new(playerStartX, playerStartY, playerSpeed, playerAnimations, playerFrames, charImage)
     friend = character.Character:new(friendStartX, friendStartY, friendSpeed, friendAnimations, friendFrames, friendImage)
     car = {xPos = walkingScreenWidth, yPos = screenHeight, image = carImage}
     table.insert(objects, player)
@@ -77,9 +78,9 @@ function love.draw()
     end
 
     if car.flipped then
-        love.graphics.draw(car.image, car.xPos, car.yPos, 0)
+        love.graphics.draw(car.image, car.xPos, car.yPos, 0, 1.5, 1.5)
     else
-        love.graphics.draw(car.image, car.xPos, car.yPos, 0, -1, 1)
+        love.graphics.draw(car.image, car.xPos, car.yPos, 0, -1.5, 1.5)
     end
     
     player:draw()
@@ -101,12 +102,14 @@ function love.update(dt)
             startGame()
         end
     else
-        success = conversation.update(dt)
+        conversation.update(dt)
 
+        --[[
         if not success then
             gameState = "WrongAnswer"
             restart()
         end
+        ]]
 
         updateCharacter(friend, dt, getFriendDirections)
         moveCharacter(friend, dt)

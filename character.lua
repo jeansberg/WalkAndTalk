@@ -20,7 +20,7 @@ speechImage = love.graphics.newImage("resources/images/speech.png")
 shoutImage = love.graphics.newImage("resources/images/shout.png")
 heartImage = love.graphics.newImage("resources/images/heart.png")
 bubbleTimerMax = 1.5
-scale = 1.2
+scale = 2
 
 -- Character inherits from GameObject
 Character = gameObject.GameObject:new(0, 0, 28, 38)

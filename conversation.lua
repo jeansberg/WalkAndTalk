@@ -1,10 +1,11 @@
 -- Package: conversation.
 -- This package contains code for generating and displaying questions/statements and answers.
-require "input"
 local P = {}
 conversation = P
 
 -- Imports
+require "input"
+
 local love = love
 local table = table
 local getmetatable = getmetatable
@@ -12,25 +13,34 @@ local setmetatable = setmetatable
 local pairs = pairs
 local next = next
 local string = string
-local print = print
 local input = input
 local type = type
 local math = math
 local os = os
+local cron = require "external.cron"
+local print = print
 setfenv(1, P)
+--
+
+-- Paths
+local topicsPath = "resources/text/topics.txt"
+local fillerPath = "resources/text/filler.txt"
+local backgroundImage = love.graphics.newImage("resources/images/background.png")
+local rightAnswer = love.audio.newSource("resources/sound/Collect_Point_00.mp3")
+local wrongAnswer = love.audio.newSource("resources/sound/Hit_02.mp3")
 
 -- Constants
-topicsPath = "resources/text/topics.txt"
-fillerPath = "resources/text/filler.txt"
-backgroundImage = love.graphics.newImage("resources/images/background.png")
-rightAnswer = love.audio.newSource("resources/sound/Collect_Point_00.mp3")
-wrongAnswer = love.audio.newSource("resources/sound/Hit_02.mp3")
+local topicRate = 2
+
+-- Globals
+local fillerAnswers = {}
+local topicStructs = {}
 
 -- Table for holding a conversation topic.
-Topic = {}
+local Topic = {}
 
 function Topic:new(comment, answer, wrongAnswer1, wrongAnswer2, fillerAnswer, fillerAllowed)
-    local o = 
+    local o =
     {comment = comment, answer = answer, 
     wrongAnswer1 = wrongAnswer1, wrongAnswer2 = wrongAnswer2,
     fillerAnswer = fillerAnswer, fillerAllowed = fillerAllowed}
@@ -40,36 +50,34 @@ function Topic:new(comment, answer, wrongAnswer1, wrongAnswer2, fillerAnswer, fi
     return o
 end
 
--- Initializes the conversation engine, which callback functions for notifying
+-- Initializes the conversation engine, with callback functions for notifying
 -- when a new topic is generated and when an answer is chosen
 function init(_newTopicCallback, _answerCallback)
     newTopicCallback = _newTopicCallback
     answerCallback = _answerCallback
-    topicRate = 2
-    
-    fillerAnswers = {}
+
+    -- Load filler answers from file
     for line in love.filesystem.lines(fillerPath) do
         table.insert(fillerAnswers, line)
     end
 
-    topics = {}
+    -- Load topics from file
     for line in love.filesystem.lines(topicsPath) do
-        local topic = {}
-            wordIterator = string.gmatch(line, '([^;]+)') do
-            topic["comment"] = wordIterator()
-            topic["answer"] = wordIterator()
-            topic["fillerAllowed"] = wordIterator()
+        local topicStruct = {}
+            local wordIterator = string.gmatch(line, '([^;]+)') do
+            topicStruct["comment"] = wordIterator()
+            topicStruct["answer"] = wordIterator()
+            topicStruct["fillerAllowed"] = wordIterator()
         end
-        table.insert(topics, topic)
+        table.insert(topicStructs, topicStruct)
     end
 end
 
 -- Resets the conversation engine.
 function reset()
     math.randomseed(os.time())
-    timer = topicRate
-    cooldownTimer = 1
-    remainingTopics = deepcopy(topics)
+    
+    remainingTopics = deepcopy(topicStructs)
     comment = ""
     finalComment = "Get ready!"
     attention = 100
@@ -77,52 +85,45 @@ end
 
 -- Updates the state of the conversation engine.
 function update(dt)
+    print(questionTimer.running)
+    if questionTimer.running == 0 then
+        coolDownTimer:update(dt)
+    else
+        questionTimer:update(dt)
+    end
+
+
+
     if table.getn(remainingTopics) == 0 then
-        remainingTopics = deepcopy(topics)
+        remainingTopics = deepcopy(topicStructs)
     end
 
-    if cooldownTimer > 0 then
-        cooldownTimer = cooldownTimer - dt
-    end
+    local selectedAnswer = input.getConversationInput()
 
+--[[
     if timer > 0 then
         timer = timer - dt
     elseif topic then
         love.audio.play(wrongAnswer)
         modifyAttention(-34)
-        updateTopic()
+        getNewTopic()
     else
-        updateTopic()
+        getNewTopic()
     end
+]]
 
-    local selectedAnswer = input.getConversationInput()
-
-    if not topic then
-        input.resetConversation()
-        return true
+    if selectedAnswer and checkAnswer(selectedAnswer) then
+        love.audio.rewind(rightAnswer)
+        love.audio.play(rightAnswer)
+        questionTimer:reset(0.01)
+        coolDownTimer:reset()
     end
-
-    if selectedAnswer then
-        if checkAnswer(selectedAnswer) then
-            love.audio.rewind(rightAnswer)
-            love.audio.play(rightAnswer)
-        else
-            love.audio.rewind(wrongAnswer)
-            love.audio.play(wrongAnswer)
-            modifyAttention(-34)
-        end
-        updateTopic()
-    end
-
-    if attention <= 0 then
-        return false
-    end
-
-    return true
 end
 
 -- Gets a new topic and randomly assigns answers to positions
-function updateTopic()
+function getNewTopic()
+    questionTimer:reset(0.01)
+
     newTopicCallback()
     topic = generateTopic()
 
@@ -133,8 +134,19 @@ function updateTopic()
     rightPosition = popRandom(answers)
     bottomPosition = answers[1]
     leftPosition = topic["fillerAnswer"]
-    timer = topicRate
 end
+
+function outOfTime()
+    love.audio.rewind(wrongAnswer)
+    love.audio.play(wrongAnswer)
+    modifyAttention(-34)
+
+    questionTimer:reset(0.01)
+    coolDownTimer:reset()
+end
+
+questionTimer = cron.after(topicRate, outOfTime)
+coolDownTimer = cron.after(0.5, getNewTopic)
 
 -- Checks the selected answer against the correct answer
 -- Returns true if the answer is correct or
@@ -203,7 +215,7 @@ function getNewAnswer(usedAnswers)
     local answer = ""
     
     while answer == "" do
-        local newAnswer = topics[love.math.random(1, table.getn(topics))]["answer"]
+        local newAnswer = topicStructs[love.math.random(1, table.getn(topicStructs))]["answer"]
         if not tableContains(usedAnswers, newAnswer) then
             answer = newAnswer
         end
@@ -296,9 +308,9 @@ function drawMeters()
         love.graphics.rectangle("fill", 400, 565, attention*4, 25)
     end
 
-    if timer > 0 then
+    if questionTimer.running < topicRate then
         love.graphics.setColor(190, 52, 58, 255)
-        love.graphics.rectangle("fill", 400, 530, (timer / topicRate) * 400, 25)
+        love.graphics.rectangle("fill", 400, 530, ((topicRate - questionTimer.running) / topicRate) * 400, 25)
     end
 
     love.graphics.setColor(255, 255, 255, 255)
