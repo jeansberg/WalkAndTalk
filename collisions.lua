@@ -30,30 +30,32 @@ end
 -- Resolves a collision between two rectangles by moving
 -- the first one back based on its speed
 function resolveCollision(rect1, rect2, dt)
-    if rect1.dx > 0 then
+    rect2.dx = rect2.dx or 0
+    rect2.dy = rect2.dy or 0
+    if rect1.dx - rect2.dx > 0 then
         -- Moving right
         local destX = rect2.xPos - rect1.width
-        if rect1.xPos - destX < 5 then
+        if rect1.xPos - destX < 2 then
             rect1.xPos = destX
         end
-    elseif rect1.dx < 0 then
+    elseif rect1.dx - rect2.dx < 0 then
         -- Moving left
         local destX = rect2.xPos + rect2.width
-        if destX - rect1.xPos < 5 then
+        if destX - rect1.xPos < 2 then
             rect1.xPos = destX
         end
     end
 
-    if rect1.dy > 0  then
+    if rect1.dy - rect2.dy > 0  then
         -- Moving down
         local destY = rect2.yPos - rect1.height
-        if rect1.yPos - destY < 5 then
+        if rect1.yPos - destY < 2 then
             rect1.yPos = destY
         end
-    elseif rect1.dy < -0 then
+    elseif rect1.dy - rect2.dy < 0 then
         -- Moving up
         local destY = rect2.yPos + rect2.height
-        if destY - rect1.yPos < 5 then
+        if destY - rect1.yPos < 2 then
             rect1.yPos = rect2.yPos + rect2.height
         end
   end

@@ -23,10 +23,10 @@ bubbleTimerMax = 1.5
 scale = 2
 
 -- Character inherits from GameObject
-Character = gameObject.GameObject:new(0, 0, 28, 38)
+Character = gameObject.GameObject:new()
 
-function Character:new(xPos, yPos, speed, animations, frames, image)
-    local o = {xPos = xPos, yPos = yPos, speed = speed, animations = animations, frames = frames, image = image}
+function Character:new(xPos, yPos, width, height, speed, animations, frames, image)
+    local o = {xPos = xPos, yPos = yPos, width = width, height = height, speed = speed, animations = animations, frames = frames, image = image}
     setmetatable(o, self)
     self.__index = self
     -- Initial position can be used when resetting characters
