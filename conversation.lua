@@ -1,9 +1,14 @@
--- Package: conversation.
--- This package contains code for generating and displaying questions/statements and answers.
+-- ##################################################################
+-- # Package: conversation.
+-- # This package contains code for generating and displaying 
+-- # questions/statements and answers.
+-- ##################################################################
 local P = {}
 conversation = P
 
--- Imports
+-- ##################################################################
+-- # Imports
+-- ##################################################################
 require "input"
 require "timer"
 
@@ -21,28 +26,35 @@ local math = math
 local os = os
 local print = print
 setfenv(1, P)
---
 
--- Paths
+-- ##################################################################
+-- # Paths
+-- ##################################################################
 local topicsPath = "resources/text/topics.txt"
 local fillerPath = "resources/text/filler.txt"
 local backgroundImage = love.graphics.newImage("resources/images/background.png")
 local rightAnswer = love.audio.newSource("resources/sound/Collect_Point_00.mp3")
 local wrongAnswer = love.audio.newSource("resources/sound/Hit_02.mp3")
 
--- Constants
+-- ##################################################################
+-- # Constants
+-- ##################################################################
 local topicRate = 2
 local coolDownPeriod = 0.5
 local startingTime = 2
 local gameOverTime = 3
 
--- Variables
+-- ##################################################################
+-- # Variables
+-- ##################################################################
 local fillerAnswers = {}
 local topicStrings = {}
 local questionTimerPercent = 100
 local attentionPercent = 100
 
--- Table for holding a conversation topic.
+-- ##################################################################
+-- # Table for holding a conversation topic.
+-- ##################################################################
 local Topic = {}
 
 function Topic:new(comment, answer, wrongAnswer1, wrongAnswer2, fillerAnswer, fillerAllowed)
@@ -56,8 +68,8 @@ function Topic:new(comment, answer, wrongAnswer1, wrongAnswer2, fillerAnswer, fi
     return o
 end
 
--- Initializes the conversation engine, with callback functions for notifying
--- when a new topic is generated and when an answer is chosen
+--[[Initializes the conversation engine, with callback functions for notifying
+when a new topic is generated and when an answer is chosen]]
 function init(_newTopicCallback, _answerCallback, _loseCallback)
     newTopicCallback = _newTopicCallback
     answerCallback = _answerCallback
@@ -65,13 +77,12 @@ function init(_newTopicCallback, _answerCallback, _loseCallback)
     loadData()
 end
 
+--[[Loads conversation data from disk]]
 function loadData()
-    -- Load filler answers from file
     for line in love.filesystem.lines(fillerPath) do
         table.insert(fillerAnswers, line)
     end
 
-    -- Load topics from file
     for line in love.filesystem.lines(topicsPath) do
         local topicString = {}
             local wordIterator = string.gmatch(line, '([^;]+)') do
@@ -83,20 +94,22 @@ function loadData()
     end
 end
 
--- Resets the conversation engine.
-function reset()
+--[[Resets the conversation engine.]]
+function reset(comment)
+    -- Make sure questions are not in the same order
     math.randomseed(os.time())
     
+    finalComment = comment
+
     remainingTopics = deepcopy(topicStrings)
     comment = ""
-    finalComment = "Get ready!"
     attentionPercent = 100
     questionTimerPercent = 0
 
     setState(CoolDownState:new(timer.Timer:new(startingTime)))
 end
 
--- Updates the state of the conversation engine.
+--[[Updates the state of the conversation engine.]]
 function update(dt)
     state:update(dt)
 
@@ -206,6 +219,7 @@ end
 -- Interrupts the conversation to show a comment
 -- depending on the game state that was reached
 function interrupt(gameState)
+    print(gameState)
     topic = nil
     if gameState == "WrongAnswer" then
         finalComment = "You're not listening! Will you please stop daydreaming?"
@@ -330,7 +344,6 @@ end
 
 function State:updateTimer(dt)
     local done = self.timer:update(dt)
-    print("Done: " , done)
     return done
 end
 
@@ -363,21 +376,11 @@ CoolDownState = State:new(timer)
 function CoolDownState:update(dt)
     if(self:updateTimer(dt)) then
         getNewTopic()
+        input.resetConversation()
         setState(QuestionState:new(timer.Timer:new(topicRate)))
     end
 end
 
--- The gameOver state counts down the gameOver timer, which resets the conversation engine
-GameOverState = State:new(timer)
-
-function GameOverState:update(dt)
-    print("Game over\n")
-    if(timer:update(dt)) then
-        reset()
-    end
-end
-
 function setState(newState)
-    print("Setting state")
     state = newState
 end

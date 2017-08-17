@@ -16,7 +16,6 @@ function Timer:new(period)
     setmetatable(o, self)
     self.__index = self
     print(o.currentTime)
-    print("new timer")
     return o
 end
 
@@ -31,8 +30,6 @@ function Timer:update(dt)
     end
 
     self.currentTime = self.currentTime - dt
-    print("Timer: " .. self.currentTime)
-
 
     if self.currentTime <= 0 then
         self:reset()

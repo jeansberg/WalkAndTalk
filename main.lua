@@ -5,22 +5,22 @@ require "collisions"
 require "conversation"
 require "character"
 
------------------------------------------------------------------------------------------------------------------------
--- Constants
------------------------------------------------------------------------------------------------------------------------
+-- ##################################################################
+-- # Constants
+-- ##################################################################
 walkingScreenWidth = love.graphics.getWidth() / 2
 screenHeight = 600
 playerSpeed = 150
 friendSpeed = 100
 carSpeed = 600
-carWidth = 172
-carHeight = 56
+carWidth = 258
+carHeight = 84
 scrollSpeed = 100
 numScreens = 10
 frameSide = 32
 playerStartX = 3/4 * walkingScreenWidth - frameSide * 2
 playerStartY = screenHeight/4 - frameSide / 2
-friendStartX = 3/4 * walkingScreenWidth - frameSide
+friendStartX = 3/4 * walkingScreenWidth
 friendStartY = screenHeight/4
 restartTimerMax = 3
 restartTimer = 0
@@ -46,8 +46,8 @@ function love.load()
     local friendAnimations = {standing = animation.Animation:new(0, 2, 2), walking = animation.Animation:new(0.1, 1, 4)}
 
     objects = {}
-    player = character.Character:new(playerStartX, playerStartY, 28, 28, playerSpeed, playerAnimations, playerFrames, charImage)
-    friend = character.Character:new(friendStartX, friendStartY, 28, 28, friendSpeed, friendAnimations, friendFrames, charImage)
+    player = character.Character:new(playerStartX, playerStartY, 56, 56, playerSpeed, playerAnimations, playerFrames, charImage)
+    friend = character.Character:new(friendStartX, friendStartY, 56, 56, friendSpeed, friendAnimations, friendFrames, charImage)
     car = {xPos = walkingScreenWidth, yPos = screenHeight, image = carImage}
     table.insert(objects, player)
     table.insert(objects, friend)
@@ -64,7 +64,7 @@ function startGame()
     love.audio.rewind(music)
     love.audio.play(music)
     gameState = "Running"
-    conversation.reset()
+    conversation.reset("Get ready!")
     player:reset()
     friend:reset()
     car = {xPos = walkingScreenWidth + carWidth, yPos = screenHeight, image = carImage}
@@ -109,13 +109,6 @@ function love.update(dt)
         end
     else
         conversation.update(dt)
-
-        --[[
-        if not success then
-            gameState = "WrongAnswer"
-            restart()
-        end
-        ]]
 
         updateCharacter(friend, dt, getFriendDirections)
         moveCharacter(friend, dt)
@@ -287,6 +280,6 @@ function onAnswer()
 end
 
 function onLose()
-    gameState = "Failure"
+    gameState = "WrongAnswer"
     restart()
 end
