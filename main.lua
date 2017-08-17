@@ -40,19 +40,14 @@ function love.load()
     imageHeight = playerImage:getHeight()
 
     local playerFrames = spriteSheet.SpriteSheet:new(charImage:getWidth(), charImage:getHeight(), frameSide, 16, "columnsFirst")
-    local friendFrames = spriteSheet.SpriteSheet:new(imageWidth, imageHeight, frameSide, 3, "rowsFirst")
+    local friendFrames = spriteSheet.SpriteSheet:new(charImage:getWidth(), charImage:getHeight(), frameSide, 16, "columnsFirst")
 
     local playerAnimations = {standing = animation.Animation:new(0, 2, 2), walking = animation.Animation:new(0.1, 1, 4)}
-    local friendAnimations = {standing = animation.Animation:new(0, 1, 1), walking = animation.Animation:new(0.2, 2, 3)}
+    local friendAnimations = {standing = animation.Animation:new(0, 2, 2), walking = animation.Animation:new(0.1, 1, 4)}
 
     objects = {}
-<<<<<<< HEAD
-    player = character.Character:new(playerStartX, playerStartY, playerSpeed, playerAnimations, playerFrames, charImage)
-    friend = character.Character:new(friendStartX, friendStartY, friendSpeed, friendAnimations, friendFrames, friendImage)
-=======
-    player = character.Character:new(playerStartX, playerStartY, 28, 10, playerSpeed, playerAnimations, playerFrames, playerImage)
-    friend = character.Character:new(friendStartX, friendStartY, 28, 10, friendSpeed, friendAnimations, friendFrames, friendImage)
->>>>>>> 338d936f0c16a773c0aa9c1c1ee441cd398db4dc
+    player = character.Character:new(playerStartX, playerStartY, 28, 28, playerSpeed, playerAnimations, playerFrames, charImage)
+    friend = character.Character:new(friendStartX, friendStartY, 28, 28, friendSpeed, friendAnimations, friendFrames, charImage)
     car = {xPos = walkingScreenWidth, yPos = screenHeight, image = carImage}
     table.insert(objects, player)
     table.insert(objects, friend)
@@ -60,7 +55,7 @@ function love.load()
 
     screens = {}
 
-    conversation.init(onNewTopic, onAnswer)
+    conversation.init(onNewTopic, onAnswer, onLose)
     startGame()
 end
 
@@ -289,4 +284,9 @@ end
 
 function onAnswer()
     player:showBubble("speech")
+end
+
+function onLose()
+    gameState = "Failure"
+    restart()
 end

@@ -76,7 +76,7 @@ function Character:draw()
         
     -- Draws the speech bubble if one is visible
     if self.bubbleVisible then
-         love.graphics.draw(self.bubbleImage, self.xPos - self.bubbleImage:getWidth() * 0.75, self.yPos - self.bubbleImage:getHeight())
+         love.graphics.draw(self.bubbleImage, self.xPos - self.bubbleImage:getWidth() * 0.7, self.yPos - self.bubbleImage:getHeight())
     end
 end
 

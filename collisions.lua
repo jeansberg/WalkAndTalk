@@ -35,13 +35,13 @@ function resolveCollision(rect1, rect2, dt)
     if rect1.dx - rect2.dx > 0 then
         -- Moving right
         local destX = rect2.xPos - rect1.width
-        if rect1.xPos - destX < 2 then
+        if rect1.xPos - destX < 4 then
             rect1.xPos = destX
         end
     elseif rect1.dx - rect2.dx < 0 then
         -- Moving left
         local destX = rect2.xPos + rect2.width
-        if destX - rect1.xPos < 2 then
+        if destX - rect1.xPos < 4 then
             rect1.xPos = destX
         end
     end
@@ -49,13 +49,13 @@ function resolveCollision(rect1, rect2, dt)
     if rect1.dy - rect2.dy > 0  then
         -- Moving down
         local destY = rect2.yPos - rect1.height
-        if rect1.yPos - destY < 2 then
+        if rect1.yPos - destY < 4 then
             rect1.yPos = destY
         end
     elseif rect1.dy - rect2.dy < 0 then
         -- Moving up
         local destY = rect2.yPos + rect2.height
-        if destY - rect1.yPos < 2 then
+        if destY - rect1.yPos < 4 then
             rect1.yPos = rect2.yPos + rect2.height
         end
   end
