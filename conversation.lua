@@ -1,10 +1,17 @@
--- Package: conversation.
--- This package contains code for generating and displaying questions/statements and answers.
-require "input"
+-- ##################################################################
+-- # Package: conversation.
+-- # This package contains code for generating and displaying 
+-- # questions/statements and answers.
+-- ##################################################################
 local P = {}
 conversation = P
 
--- Imports
+-- ##################################################################
+-- # Imports
+-- ##################################################################
+require "input"
+require "timer"
+
 local love = love
 local table = table
 local getmetatable = getmetatable
@@ -12,137 +19,130 @@ local setmetatable = setmetatable
 local pairs = pairs
 local next = next
 local string = string
-local print = print
 local input = input
+local timer = timer
 local type = type
 local math = math
 local os = os
+local print = print
 setfenv(1, P)
 
--- Constants
-topicsPath = "resources/text/topics.txt"
-fillerPath = "resources/text/filler.txt"
-backgroundImage = love.graphics.newImage("resources/images/background.png")
-rightAnswer = love.audio.newSource("resources/sound/Collect_Point_00.mp3")
-wrongAnswer = love.audio.newSource("resources/sound/Hit_02.mp3")
+-- ##################################################################
+-- # Paths
+-- ##################################################################
+local topicsPath = "resources/text/topics.txt"
+local fillerPath = "resources/text/filler.txt"
+local backgroundImage = love.graphics.newImage("resources/images/background.png")
+local rightAnswer = love.audio.newSource("resources/sound/Collect_Point_00.mp3")
+local wrongAnswer = love.audio.newSource("resources/sound/Hit_02.mp3")
 
--------------------------------------
--- Table for holding a conversation topic.
--------------------------------------
-Topic = {}
+-- ##################################################################
+-- # Constants
+-- ##################################################################
+local topicRate = 2
+local coolDownPeriod = 0.5
+local startingTime = 2
+local gameOverTime = 3
 
-function Topic:new (o)
-    local o = o or {}
+-- ##################################################################
+-- # Variables
+-- ##################################################################
+local fillerAnswers = {}
+local topicStrings = {}
+local questionTimerPercent = 100
+local attentionPercent = 100
+
+-- ##################################################################
+-- # Table for holding a conversation topic.
+-- ##################################################################
+local Topic = {}
+
+function Topic:new(comment, answer, wrongAnswer1, wrongAnswer2, fillerAnswer, fillerAllowed)
+    local o =
+    {comment = comment, answer = answer, 
+    wrongAnswer1 = wrongAnswer1, wrongAnswer2 = wrongAnswer2,
+    fillerAnswer = fillerAnswer, fillerAllowed = fillerAllowed}
+
     setmetatable(o, self)
     self.__index = self
     return o
 end
 
--------------------------------------
--- Initializes the conversation engine.
--- @param rate The rate at which new questions are generated.
--------------------------------------
-function init(_newTopicCallback, _answerCallback)
+--[[Initializes the conversation engine, with callback functions for notifying
+when a new topic is generated and when an answer is chosen]]
+function init(_newTopicCallback, _answerCallback, _loseCallback)
     newTopicCallback = _newTopicCallback
     answerCallback = _answerCallback
-    topicRate = 2
-    
-    fillerAnswers = {}
+    loseCallback = _loseCallback
+    loadData()
+end
+
+--[[Loads conversation data from disk]]
+function loadData()
     for line in love.filesystem.lines(fillerPath) do
         table.insert(fillerAnswers, line)
     end
 
-    topics = {}
     for line in love.filesystem.lines(topicsPath) do
-        local topic = {}
-            wordIterator = string.gmatch(line, '([^;]+)') do
-            topic["comment"] = wordIterator()
-            topic["answer"] = wordIterator()
-            topic["fillerAllowed"] = wordIterator()
+        local topicString = {}
+            local wordIterator = string.gmatch(line, '([^;]+)') do
+            topicString["comment"] = wordIterator()
+            topicString["answer"] = wordIterator()
+            topicString["fillerAllowed"] = wordIterator()
         end
-        table.insert(topics, topic)
+        table.insert(topicStrings, topicString)
     end
 end
 
--------------------------------------
--- Resets the conversation engine.
--------------------------------------
-function reset()
+--[[Resets the conversation engine.]]
+function reset(comment)
+    -- Make sure questions are not in the same order
     math.randomseed(os.time())
-    timer = topicRate
-    cooldownTimer = 1
-    remainingTopics = deepcopy(topics)
+    
+    finalComment = comment
+
+    remainingTopics = deepcopy(topicStrings)
     comment = ""
-    finalComment = "Get ready!"
-    attention = 100
+    attentionPercent = 100
+    questionTimerPercent = 0
+
+    setState(CoolDownState:new(timer.Timer:new(startingTime)))
 end
 
--------------------------------------
--- Updates the state of the conversation engine.
--- @param dt Time passed in seconds since the last update call.
--------------------------------------
+--[[Updates the state of the conversation engine.]]
 function update(dt)
+    state:update(dt)
+
     if table.getn(remainingTopics) == 0 then
-        remainingTopics = deepcopy(topics)
+        remainingTopics = deepcopy(topicStrings)
     end
-
-    if cooldownTimer > 0 then
-        cooldownTimer = cooldownTimer - dt
-    end
-
-    if timer > 0 then
-        timer = timer - dt
-    elseif topic then
-        love.audio.play(wrongAnswer)
-        modifyAttention(-34)
-        updateTopic()
-    else
-        updateTopic()
-    end
-
-    local selectedAnswer = input.getConversationInput()
-
-    if not topic then
-        input.resetConversation()
-        return true
-    end
-
-    if selectedAnswer then
-        if checkAnswer(selectedAnswer) then
-            love.audio.rewind(rightAnswer)
-            love.audio.play(rightAnswer)
-        else
-            love.audio.rewind(wrongAnswer)
-            love.audio.play(wrongAnswer)
-            modifyAttention(-34)
-        end
-        updateTopic()
-    end
-
-    if attention <= 0 then
-        return false
-    end
-
-    return true
 end
 
--------------------------------------
 -- Gets a new topic and randomly assigns answers to positions
--------------------------------------
-function updateTopic()
+function getNewTopic()
     newTopicCallback()
     topic = generateTopic()
+
     local answers = {topic["answer"], topic["wrongAnswer1"], topic["wrongAnswer2"]}
-    
+
     comment = topic["comment"]
     topPosition = popRandom(answers)
     rightPosition = popRandom(answers)
     bottomPosition = answers[1]
     leftPosition = topic["fillerAnswer"]
 
-    timer = topicRate
+    state = questionState
 end
 
+function failAnswer()
+    love.audio.rewind(wrongAnswer)
+    love.audio.play(wrongAnswer)
+    modifyAttention(-34)
+end
+
+-- Checks the selected answer against the correct answer
+-- Returns true if the answer is correct or
+-- if the filler answer is selected and filler answers are allowed
 function checkAnswer(selectedAnswer)
     answerCallback()
 
@@ -162,9 +162,7 @@ function checkAnswer(selectedAnswer)
     return false
 end
 
--------------------------------------
 -- Draws the current topic and the rest of the conversation UI.
--------------------------------------
 function draw()
     drawBackground()
     drawMeters()
@@ -185,36 +183,31 @@ function draw()
     end
 end
 
--------------------------------------
 -- Returns a new Topic instance from the remaining topics list.
--------------------------------------
 function generateTopic()
     local index = math.random(1, table.getn(remainingTopics))
     local newTopic = remainingTopics[index]
     local fillerAnswer = fillerAnswers[love.math.random(1, table.getn(fillerAnswers))]
     local wrongAnswer1 = getNewAnswer({newTopic["answer"]})
     local wrongAnswer2 = getNewAnswer({newTopic["answer"], wrongAnswer1})
-    local topic = {comment = newTopic["comment"], 
-        answer = newTopic["answer"],
-        wrongAnswer1 = wrongAnswer1,
-        wrongAnswer2 = wrongAnswer2, 
-        fillerAnswer = fillerAnswer, 
-        fillerAllowed = newTopic["fillerAllowed"]}
+    local topic = Topic:new(newTopic["comment"], 
+        newTopic["answer"],
+        wrongAnswer1,
+        wrongAnswer2, 
+        fillerAnswer, 
+        newTopic["fillerAllowed"])
     
     table.remove(remainingTopics, index)
-
     return topic
 end
 
--------------------------------------
 -- Returns a random answer from the topics table.
--- @param usedAnswers A table of answers that will be excluded.
--------------------------------------
+-- excluding answers that have already been selected.
 function getNewAnswer(usedAnswers)
     local answer = ""
     
     while answer == "" do
-        local newAnswer = topics[love.math.random(1, table.getn(topics))]["answer"]
+        local newAnswer = topicStrings[love.math.random(1, table.getn(topicStrings))]["answer"]
         if not tableContains(usedAnswers, newAnswer) then
             answer = newAnswer
         end
@@ -223,7 +216,10 @@ function getNewAnswer(usedAnswers)
     return answer
 end
 
+-- Interrupts the conversation to show a comment
+-- depending on the game state that was reached
 function interrupt(gameState)
+    print(gameState)
     topic = nil
     if gameState == "WrongAnswer" then
         finalComment = "You're not listening! Will you please stop daydreaming?"
@@ -261,7 +257,7 @@ end
 -------------------------------------
 function popRandom(t)
     random = love.math.random(1, table.getn(t))
-    value = t[random]
+    local value = t[random]
     table.remove(t, random)
     return value
 end
@@ -285,6 +281,7 @@ function deepcopy(orig)
     return copy
 end
 
+-- Draws boxes around answers
 function drawBoxes()
     love.graphics.rectangle("line", 510, 200, 180, 60)
     love.graphics.rectangle("line", 610, 300, 180, 60)
@@ -292,19 +289,21 @@ function drawBoxes()
     love.graphics.rectangle("line", 410, 300, 180, 60)
 end
 
+-- Draws the background image
 function drawBackground()
     love.graphics.draw(backgroundImage, 400, 0)
 end
 
+-- Draws the timer and attention meters
 function drawMeters()
-    if attention > 0 then
+    if attentionPercent > 0 then
         love.graphics.setColor(26, 99, 24, 255)
-        love.graphics.rectangle("fill", 400, 565, attention*4, 25)
+        love.graphics.rectangle("fill", 400, 565, attentionPercent*4, 25)
     end
 
-    if timer > 0 then
+    if questionTimerPercent > 0 then
         love.graphics.setColor(190, 52, 58, 255)
-        love.graphics.rectangle("fill", 400, 530, (timer / topicRate) * 400, 25)
+        love.graphics.rectangle("fill", 400, 530, questionTimerPercent * 400, 25)
     end
 
     love.graphics.setColor(255, 255, 255, 255)
@@ -313,10 +312,75 @@ function drawMeters()
     love.graphics.printf("Attention", 400, 570, 400, "center")
 end
 
+-- Updates the attention value without letting it go below 0 or above 100
 function modifyAttention(value)
     if value > 0 then
-        attention = math.min(attention + value, 100)
+        attentionPercent = math.min(attentionPercent + value, 100)
     elseif value < 0 then
-        attention = math.max(attention + value, 0)
+        attentionPercent = math.max(attentionPercent + value, 0)
     end
+
+    if attentionPercent == 0 then
+        loseCallback()
+    end
+end
+
+function updateQuestionTimer(value)
+    questionTimerPercent = value / topicRate
+end
+
+-- ##################################################################
+-- # State machine
+-- ##################################################################
+
+State = {}
+
+function State:new(timer)
+    local o = {timer = timer}
+    setmetatable(o, self)
+    self.__index = self
+    return o
+end
+
+function State:updateTimer(dt)
+    local done = self.timer:update(dt)
+    return done
+end
+
+-- The question state counts down the question timer, which triggers a failed question state if not interrupted
+QuestionState = State:new(timer)
+
+function QuestionState:update(dt)
+    local selectedAnswer = input.getConversationInput()
+
+    if selectedAnswer then 
+        if checkAnswer(selectedAnswer) then
+            love.audio.rewind(rightAnswer)
+            love.audio.play(rightAnswer)
+        else
+            failAnswer()
+        end
+        setState(CoolDownState:new(timer.Timer:new(coolDownPeriod)))
+    else
+        if(self.timer:update(dt)) then
+            failAnswer()
+            setState(CoolDownState:new(timer.Timer:new(coolDownPeriod)))
+        end
+        updateQuestionTimer(self.timer.currentTime)
+    end
+end
+
+-- The cooldown state counts down the cooldown timer, which triggers a new question and transfers control to the question state
+CoolDownState = State:new(timer)
+
+function CoolDownState:update(dt)
+    if(self:updateTimer(dt)) then
+        getNewTopic()
+        input.resetConversation()
+        setState(QuestionState:new(timer.Timer:new(topicRate)))
+    end
+end
+
+function setState(newState)
+    state = newState
 end

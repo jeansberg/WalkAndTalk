@@ -7,6 +7,7 @@ input = P
 local love = love
 setfenv(1, P)
 
+-- Gets a dictionary containing currently pressed direction keys for determining movement direction
 function getMovementInput()
     local up = love.keyboard.isDown("w")
     local left = love.keyboard.isDown("a")
@@ -16,13 +17,14 @@ function getMovementInput()
     return {up=up, left=left, down=down, right=right}
 end
 
-
+-- Gets the last pressed arrow key for determining selected answer
 function love.keypressed(key)
     if key == "down" or key == "up" or key == "left" or key == "right" then
         lastKey = key
    end
 end
 
+-- Returns the last pressed arrow key and clears it
 function getConversationInput()
     local returnKey
     if lastKey then
@@ -34,6 +36,7 @@ function getConversationInput()
     return nil
 end
 
+-- Clears the last pressed arrow key
 function resetConversation()
     lastKey = nil
 end
