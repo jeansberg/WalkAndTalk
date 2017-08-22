@@ -57,7 +57,7 @@ function Animation:incrementFrame(dFrame)
     local logicalFrame = self.currentFrame + dFrame
 
     if logicalFrame >= self.endFrame then
-        self.currentFrame = self.startFrame + (logicalFrame % self.endFrame) 
+        self.currentFrame = self.startFrame + (logicalFrame % self.endFrame)
     else
         self.currentFrame = self.currentFrame + 1
     end

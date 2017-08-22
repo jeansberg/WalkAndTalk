@@ -18,17 +18,22 @@ carHeight = 84
 scrollSpeed = 100
 numScreens = 10
 frameSide = 32
-playerStartX = 3/4 * walkingScreenWidth - frameSide * 2
-playerStartY = screenHeight/4 - frameSide / 2
-friendStartX = 3/4 * walkingScreenWidth
-friendStartY = screenHeight/4
+playerStartX = 3 / 4 * walkingScreenWidth - frameSide * 2
+playerStartY = screenHeight / 4 - frameSide / 2
+friendStartX = 3 / 4 * walkingScreenWidth
+friendStartY = screenHeight / 4
 restartTimerMax = 3
 restartTimer = 0
 restarting = false
 
 function love.load()
+    -- For ZeroBrane Studio
+    if arg[#arg] == "-debug" then
+        require("mobdebug").start()
+    end
+    --
+
     playerImage = love.graphics.newImage("resources/images/player.png")
-    charImage = love.graphics.newImage("resources/images/character.png")
     friendImage = love.graphics.newImage("resources/images/friend.png")
     carImage = love.graphics.newImage("resources/images/car2.png")
     victory = love.audio.newSource("resources/sound/Jingle_Win_01.mp3")
@@ -39,15 +44,55 @@ function love.load()
     imageWidth = playerImage:getWidth()
     imageHeight = playerImage:getHeight()
 
-    local playerFrames = spriteSheet.SpriteSheet:new(charImage:getWidth(), charImage:getHeight(), frameSide, 16, "columnsFirst")
-    local friendFrames = spriteSheet.SpriteSheet:new(charImage:getWidth(), charImage:getHeight(), frameSide, 16, "columnsFirst")
+    local playerFrames =
+        spriteSheet.SpriteSheet:new(
+        friendImage:getWidth(),
+        friendImage:getHeight(),
+        frameSide,
+        16,
+        "columnsFirst"
+    )
+    local friendFrames =
+        spriteSheet.SpriteSheet:new(
+        friendImage:getWidth(),
+        friendImage:getHeight(),
+        frameSide,
+        16,
+        "columnsFirst"
+    )
 
-    local playerAnimations = {standing = animation.Animation:new(0, 2, 2), walking = animation.Animation:new(0.1, 1, 4)}
-    local friendAnimations = {standing = animation.Animation:new(0, 2, 2), walking = animation.Animation:new(0.1, 1, 4)}
+    local playerAnimations = {
+        standing = animation.Animation:new(0, 2, 2),
+        walking = animation.Animation:new(0.1, 1, 4)
+    }
+    local friendAnimations = {
+        standing = animation.Animation:new(0, 2, 2),
+        walking = animation.Animation:new(0.1, 1, 4)
+    }
 
     objects = {}
-    player = character.Character:new(playerStartX, playerStartY, 56, 56, playerSpeed, playerAnimations, playerFrames, charImage)
-    friend = character.Character:new(friendStartX, friendStartY, 56, 56, friendSpeed, friendAnimations, friendFrames, charImage)
+    player =
+        character.Character:new(
+        playerStartX,
+        playerStartY,
+        40,
+        40,
+        playerSpeed,
+        playerAnimations,
+        playerFrames,
+        playerImage
+    )
+    friend =
+        character.Character:new(
+        friendStartX,
+        friendStartY,
+        40,
+        40,
+        friendSpeed,
+        friendAnimations,
+        friendFrames,
+        friendImage
+    )
     car = {xPos = walkingScreenWidth, yPos = screenHeight, image = carImage}
     table.insert(objects, player)
     table.insert(objects, friend)
@@ -78,12 +123,12 @@ function love.draw()
     end
 
     if car.flipped then
-        love.graphics.draw(car.image, car.xPos, car.yPos, 0, 1.5, 1.5)
+        love.graphics.draw(car.image, car.xPos, car.yPos, 0, 1.4, 1.4)
     else
-        love.graphics.draw(car.image, car.xPos, car.yPos, 0, -1.5, 1.5)
+        love.graphics.draw(car.image, car.xPos, car.yPos, 0, -1.4, 1.4)
     end
-    
-    if( player.yPos > friend.yPos) then
+
+    if (player.yPos > friend.yPos) then
         friend:draw()
         player:draw()
     else
@@ -128,7 +173,10 @@ function updateCharacter(char, dt, getDirections)
     char.dy = -scrollSpeed
     local directions = getDirections()
 
-    local up, left, down, right = directions["up"], directions["left"], directions["down"], directions["right"]
+    local up,
+        left,
+        down,
+        right = directions["up"], directions["left"], directions["down"], directions["right"]
     char.animations[char.currentAnimation]:update(dt)
 
     if not (up or left or down or right) then
@@ -139,11 +187,11 @@ function updateCharacter(char, dt, getDirections)
     char:setAnimation("walking")
 
     local speed = char.speed
-    if((down or up) and (left or right)) then
+    if ((down or up) and (left or right)) then
         speed = speed / math.sqrt(2)
     end
 
-    if down and char.yPos<screenHeight - char.height then
+    if down and char.yPos < screenHeight - char.height then
         char.dy = char.dy + speed
     elseif up then
         char.dy = char.dy - speed
@@ -174,7 +222,7 @@ function moveCharacter(char, dt)
                 gameState = "Finished"
                 restart("")
             end
-            
+
             for j = 1, table.getn(screens) do
                 local barrier = screens[j]:getBarrier()
                 if barrier then
@@ -209,14 +257,17 @@ function getFriendDirections()
     up = false
     left = false
     right = false
-    
+
     if friend.screenLayout == "leftToRight" and friend.xPos < friendStartX then
         right = true
-    elseif friend.screenLayout == "rightToLeft" and friend.xPos > 1/4 * walkingScreenWidth + frameSide then
+    elseif
+        friend.screenLayout == "rightToLeft" and
+            friend.xPos > 1 / 4 * walkingScreenWidth + frameSide
+     then
         left = true
     end
 
-    return {up=up, left=left, down=down, right=right}
+    return {up = up, left = left, down = down, right = right}
 end
 
 function setFriendSpeed()
