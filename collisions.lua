@@ -1,26 +1,26 @@
 -- Package: collisions
 -- This package contains functions for detecting and resolving collisions
 
-local P = {}
-collisions = P
-
--- Imports
-local print = print
-setfenv(1, P)
+local collisions = {}
 
 -- Checks if two rectangles overlap
 -- Returns false if either of the rectangles is nil
-function checkOverlap(rect1, rect2)
+function collisions.checkOverlap(rect1, rect2)
     if not (rect1 and rect2) then
         return false
     end
-    if  ((rect1.xPos < rect2.xPos and rect1.xPos + rect1.width > rect2.xPos) or 
-        (rect1.xPos > rect2.xPos and rect1.xPos + rect1.width < rect2.xPos + rect2.width) or 
-        (rect1.xPos < rect2.xPos + rect2.width and rect1.xPos + rect1.width > rect2.xPos + rect2.width)) and
-        ((rect1.yPos < rect2.yPos and rect1.yPos + rect1.height > rect2.yPos) or 
-        (rect1.yPos > rect2.yPos and rect1.yPos + rect1.height < rect2.yPos + rect2.width) or
-        (rect1.yPos < rect2.yPos + rect2.height and rect1.yPos + rect2.height > rect2.yPos + rect2.height)) then
 
+    local r1 = rect1
+    local r2 = rect2
+
+    if
+        ((r1.xPos < r2.xPos and r1.xPos + r1.width > r2.xPos) or
+            (r1.xPos > r2.xPos and r1.xPos + r1.width < r2.xPos + r2.width) or
+            (r1.xPos < r2.xPos + r2.width and r1.xPos + r1.width > r2.xPos + r2.width)) and
+            ((r1.yPos < r2.yPos and r1.yPos + r1.height > r2.yPos) or
+                (r1.yPos > r2.yPos and r1.yPos + r1.height < r2.yPos + r2.width) or
+                (r1.yPos < r2.yPos + r2.height and r1.yPos + r2.height > r2.yPos + r2.height))
+     then
         return true
     else
         return false
@@ -29,7 +29,7 @@ end
 
 -- Resolves a collision between two rectangles by moving
 -- the first one back based on its speed
-function resolveCollision(rect1, rect2, dt)
+function collisions.resolveCollision(rect1, rect2, dt)
     rect2.dx = rect2.dx or 0
     rect2.dy = rect2.dy or 0
     if rect1.dx - rect2.dx > 0 then
@@ -46,7 +46,7 @@ function resolveCollision(rect1, rect2, dt)
         end
     end
 
-    if rect1.dy - rect2.dy > 0  then
+    if rect1.dy - rect2.dy > 0 then
         -- Moving down
         local destY = rect2.yPos - rect1.height
         if rect1.yPos - destY < 4 then
@@ -58,5 +58,7 @@ function resolveCollision(rect1, rect2, dt)
         if destY - rect1.yPos < 4 then
             rect1.yPos = rect2.yPos + rect2.height
         end
-  end
+    end
 end
+
+return collisions

@@ -1,14 +1,9 @@
 -- Package: input
 -- This package contains functions for getting player input using love.keyboard
-local P = {}
-input = P
-
--- Imports
-local love = love
-setfenv(1, P)
+input = {}
 
 -- Gets a dictionary containing currently pressed direction keys for determining movement direction
-function getMovementInput()
+function input.getMovementInput()
     local up = love.keyboard.isDown("w")
     local left = love.keyboard.isDown("a")
     local down = love.keyboard.isDown("s")
@@ -25,7 +20,7 @@ function love.keypressed(key)
 end
 
 -- Returns the last pressed arrow key and clears it
-function getConversationInput()
+function input.getConversationInput()
     local returnKey
     if lastKey then
         returnKey = lastKey
@@ -37,6 +32,8 @@ function getConversationInput()
 end
 
 -- Clears the last pressed arrow key
-function resetConversation()
+function input.resetConversation()
     lastKey = nil
 end
+
+return input

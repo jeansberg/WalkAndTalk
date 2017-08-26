@@ -1,32 +1,33 @@
 -- Package: character
 -- This package contains the Character table used for the player character, friend and other NPCs
 
-require "animation"
-require "spriteSheet"
-require "gameObject"
+local animation = require "animation"
+local spriteSheet = require "spriteSheet"
+local gameObject = require "gameObject"
 
-local P = {}
-character = P
-
--- Imports
-local print = print
-local love = love
-local gameObject = gameObject
-local setmetatable = setmetatable
-setfenv(1, P)
+local character = {}
 
 -- Constants
-speechImage = love.graphics.newImage("resources/images/speech.png")
-shoutImage = love.graphics.newImage("resources/images/shout.png")
-heartImage = love.graphics.newImage("resources/images/heart.png")
-bubbleTimerMax = 1.5
-scale = 2
+local speechImage = love.graphics.newImage("resources/images/speech.png")
+local shoutImage = love.graphics.newImage("resources/images/shout.png")
+local heartImage = love.graphics.newImage("resources/images/heart.png")
+local bubbleTimerMax = 1.5
+local scale = 2
 
 -- Character inherits from GameObject
-Character = gameObject.GameObject:new()
+local Character = gameObject.newGameObject()
 
 function Character:new(xPos, yPos, width, height, speed, animations, frames, image)
-    local o = {xPos = xPos, yPos = yPos, width = width, height = height, speed = speed, animations = animations, frames = frames, image = image}
+    local o = {
+        xPos = xPos,
+        yPos = yPos,
+        width = width,
+        height = height,
+        speed = speed,
+        animations = animations,
+        frames = frames,
+        image = image
+    }
     setmetatable(o, self)
     self.__index = self
     -- Initial position can be used when resetting characters
@@ -61,7 +62,7 @@ end
 
 -- Sets a new animation for the character
 function Character:setAnimation(animation)
-    if(animation == self.currentAnimation) then
+    if (animation == self.currentAnimation) then
         return
     end
 
@@ -72,11 +73,23 @@ end
 -- Draws the character
 function Character:draw()
     -- Draws the current frame
-    love.graphics.draw(self.image, self.frames[self.animations[self.currentAnimation].currentFrame], self.xPos, self.yPos, 0, scale, scale)
-        
+    love.graphics.draw(
+        self.image,
+        self.frames[self.animations[self.currentAnimation].currentFrame],
+        self.xPos,
+        self.yPos,
+        0,
+        scale,
+        scale
+    )
+
     -- Draws the speech bubble if one is visible
     if self.bubbleVisible then
-         love.graphics.draw(self.bubbleImage, self.xPos - self.bubbleImage:getWidth() * 0.7, self.yPos - self.bubbleImage:getHeight())
+        love.graphics.draw(
+            self.bubbleImage,
+            self.xPos - self.bubbleImage:getWidth() * 0.7,
+            self.yPos - self.bubbleImage:getHeight()
+        )
     end
 end
 
@@ -92,3 +105,9 @@ function Character:showBubble(bubbleType)
     self.bubbleTimer = 0
     self.bubbleVisible = true
 end
+
+function character.newCharacter(xPos, yPos, width, height, speed, animations, frames, image)
+    return Character:new(xPos, yPos, width, height, speed, animations, frames, image)
+end
+
+return character

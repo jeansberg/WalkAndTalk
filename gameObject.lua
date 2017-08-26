@@ -1,16 +1,8 @@
 -- Package: gameObject
 -- This package contains the GameObject table which is the base class for all objects
+local gameObject = {}
 
-local P = {}
-gameObject = P
-
--- Imports
-local print = print
-local love = love
-local setmetatable = setmetatable
-setfenv(1, P)
-
-GameObject = {}
+local GameObject = {}
 
 function GameObject:new(xPos, yPos, width, height)
     local o = {xPos = xPos, yPos = yPos, width = width, height = height}
@@ -36,3 +28,9 @@ end
 function GameObject:right()
     return self.xPos + self.width
 end
+
+function gameObject.newGameObject(xPos, yPos, width, height) 
+    return GameObject:new(xPos, yPos, width, height)
+end
+
+return gameObject
