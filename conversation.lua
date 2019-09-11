@@ -32,9 +32,11 @@ setfenv(1, P)
 -- ##################################################################
 local topicsPath = "resources/text/topics.txt"
 local fillerPath = "resources/text/filler.txt"
-local backgroundImage = love.graphics.newImage("resources/images/background.png")
-local rightAnswer = love.audio.newSource("resources/sound/Collect_Point_00.mp3")
-local wrongAnswer = love.audio.newSource("resources/sound/Hit_02.mp3")
+local backgroundImage = love.graphics
+                            .newImage("resources/images/background.png")
+local rightAnswer = love.audio.newSource("resources/sound/Collect_Point_00.mp3",
+                                         "static")
+local wrongAnswer = love.audio.newSource("resources/sound/Hit_02.mp3", "static")
 
 -- ##################################################################
 -- # Constants
@@ -57,11 +59,16 @@ local attentionPercent = 100
 -- ##################################################################
 local Topic = {}
 
-function Topic:new(comment, answer, wrongAnswer1, wrongAnswer2, fillerAnswer, fillerAllowed)
-    local o =
-    {comment = comment, answer = answer, 
-    wrongAnswer1 = wrongAnswer1, wrongAnswer2 = wrongAnswer2,
-    fillerAnswer = fillerAnswer, fillerAllowed = fillerAllowed}
+function Topic:new(comment, answer, wrongAnswer1, wrongAnswer2, fillerAnswer,
+                   fillerAllowed)
+    local o = {
+        comment = comment,
+        answer = answer,
+        wrongAnswer1 = wrongAnswer1,
+        wrongAnswer2 = wrongAnswer2,
+        fillerAnswer = fillerAnswer,
+        fillerAllowed = fillerAllowed
+    }
 
     setmetatable(o, self)
     self.__index = self
@@ -85,7 +92,8 @@ function loadData()
 
     for line in love.filesystem.lines(topicsPath) do
         local topicString = {}
-            local wordIterator = string.gmatch(line, '([^;]+)') do
+        local wordIterator = string.gmatch(line, '([^;]+)')
+        do
             topicString["comment"] = wordIterator()
             topicString["answer"] = wordIterator()
             topicString["fillerAllowed"] = wordIterator()
@@ -98,7 +106,7 @@ end
 function reset(comment)
     -- Make sure questions are not in the same order
     math.randomseed(os.time())
-    
+
     finalComment = comment
 
     remainingTopics = deepcopy(topicStrings)
@@ -123,7 +131,9 @@ function getNewTopic()
     newTopicCallback()
     topic = generateTopic()
 
-    local answers = {topic["answer"], topic["wrongAnswer1"], topic["wrongAnswer2"]}
+    local answers = {
+        topic["answer"], topic["wrongAnswer1"], topic["wrongAnswer2"]
+    }
 
     comment = topic["comment"]
     topPosition = popRandom(answers)
@@ -135,7 +145,7 @@ function getNewTopic()
 end
 
 function failAnswer()
-    love.audio.rewind(wrongAnswer)
+    love.audio.stop(wrongAnswer)
     love.audio.play(wrongAnswer)
     modifyAttention(-34)
 end
@@ -147,16 +157,16 @@ function checkAnswer(selectedAnswer)
     answerCallback()
 
     if selectedAnswer == "up" and topic["answer"] == topPosition then
-            modifyAttention(17)
-            return true
+        modifyAttention(17)
+        return true
     elseif selectedAnswer == "down" and topic["answer"] == bottomPosition then
-            modifyAttention(17)
-            return true 
+        modifyAttention(17)
+        return true
     elseif selectedAnswer == "left" and topic["fillerAllowed"] == "true" then
-            return true 
+        return true
     elseif selectedAnswer == "right" and topic["answer"] == rightPosition then
-            modifyAttention(17)
-            return true 
+        modifyAttention(17)
+        return true
     end
 
     return false
@@ -169,7 +179,7 @@ function draw()
 
     if topic then
         drawBoxes()
-        
+
         love.graphics.setNewFont(20)
         love.graphics.printf(comment, 500, 50, 200, "center")
         love.graphics.setNewFont(14)
@@ -187,16 +197,14 @@ end
 function generateTopic()
     local index = math.random(1, table.getn(remainingTopics))
     local newTopic = remainingTopics[index]
-    local fillerAnswer = fillerAnswers[love.math.random(1, table.getn(fillerAnswers))]
+    local fillerAnswer = fillerAnswers[love.math.random(1, table.getn(
+                                                            fillerAnswers))]
     local wrongAnswer1 = getNewAnswer({newTopic["answer"]})
     local wrongAnswer2 = getNewAnswer({newTopic["answer"], wrongAnswer1})
-    local topic = Topic:new(newTopic["comment"], 
-        newTopic["answer"],
-        wrongAnswer1,
-        wrongAnswer2, 
-        fillerAnswer, 
-        newTopic["fillerAllowed"])
-    
+    local topic = Topic:new(newTopic["comment"], newTopic["answer"],
+                            wrongAnswer1, wrongAnswer2, fillerAnswer,
+                            newTopic["fillerAllowed"])
+
     table.remove(remainingTopics, index)
     return topic
 end
@@ -205,9 +213,10 @@ end
 -- excluding answers that have already been selected.
 function getNewAnswer(usedAnswers)
     local answer = ""
-    
+
     while answer == "" do
-        local newAnswer = topicStrings[love.math.random(1, table.getn(topicStrings))]["answer"]
+        local newAnswer = topicStrings[love.math.random(1, table.getn(
+                                                            topicStrings))]["answer"]
         if not tableContains(usedAnswers, newAnswer) then
             answer = newAnswer
         end
@@ -243,12 +252,8 @@ end
 -- @param element The element to search for.
 -------------------------------------
 function tableContains(t, element)
-  for _, value in pairs(t) do
-    if value == element then
-      return true
-    end
-  end
-  return false
+    for _, value in pairs(t) do if value == element then return true end end
+    return false
 end
 
 -------------------------------------
@@ -290,20 +295,19 @@ function drawBoxes()
 end
 
 -- Draws the background image
-function drawBackground()
-    love.graphics.draw(backgroundImage, 400, 0)
-end
+function drawBackground() love.graphics.draw(backgroundImage, 400, 0) end
 
 -- Draws the timer and attention meters
 function drawMeters()
     if attentionPercent > 0 then
         love.graphics.setColor(26, 99, 24, 255)
-        love.graphics.rectangle("fill", 400, 565, attentionPercent*4, 25)
+        love.graphics.rectangle("fill", 400, 565, attentionPercent * 4, 25)
     end
 
     if questionTimerPercent > 0 then
         love.graphics.setColor(190, 52, 58, 255)
-        love.graphics.rectangle("fill", 400, 530, questionTimerPercent * 400, 25)
+        love.graphics
+            .rectangle("fill", 400, 530, questionTimerPercent * 400, 25)
     end
 
     love.graphics.setColor(255, 255, 255, 255)
@@ -320,14 +324,10 @@ function modifyAttention(value)
         attentionPercent = math.max(attentionPercent + value, 0)
     end
 
-    if attentionPercent == 0 then
-        loseCallback()
-    end
+    if attentionPercent == 0 then loseCallback() end
 end
 
-function updateQuestionTimer(value)
-    questionTimerPercent = value / topicRate
-end
+function updateQuestionTimer(value) questionTimerPercent = value / topicRate end
 
 -- ##################################################################
 -- # State machine
@@ -353,16 +353,16 @@ QuestionState = State:new(timer)
 function QuestionState:update(dt)
     local selectedAnswer = input.getConversationInput()
 
-    if selectedAnswer then 
+    if selectedAnswer then
         if checkAnswer(selectedAnswer) then
-            love.audio.rewind(rightAnswer)
+            love.audio.stop(rightAnswer)
             love.audio.play(rightAnswer)
         else
             failAnswer()
         end
         setState(CoolDownState:new(timer.Timer:new(coolDownPeriod)))
     else
-        if(self.timer:update(dt)) then
+        if (self.timer:update(dt)) then
             failAnswer()
             setState(CoolDownState:new(timer.Timer:new(coolDownPeriod)))
         end
@@ -374,13 +374,11 @@ end
 CoolDownState = State:new(timer)
 
 function CoolDownState:update(dt)
-    if(self:updateTimer(dt)) then
+    if (self:updateTimer(dt)) then
         getNewTopic()
         input.resetConversation()
         setState(QuestionState:new(timer.Timer:new(topicRate)))
     end
 end
 
-function setState(newState)
-    state = newState
-end
+function setState(newState) state = newState end

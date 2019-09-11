@@ -28,38 +28,30 @@ restarting = false
 
 function love.load()
     -- For ZeroBrane Studio
-    if arg[#arg] == "-debug" then
-        require("mobdebug").start()
-    end
+    if arg[#arg] == "-debug" then require("mobdebug").start() end
     --
 
     playerImage = love.graphics.newImage("resources/images/player.png")
     friendImage = love.graphics.newImage("resources/images/friend.png")
-    carImage = love.graphics.newImage("resources/images/car2.png")
-    victory = love.audio.newSource("resources/sound/Jingle_Win_01.mp3")
-    failure = love.audio.newSource("resources/sound/Jingle_Lose_01.mp3")
-    skid = love.audio.newSource("resources/sound/skid.mp3")
-    music = love.audio.newSource("resources/sound/Sound Way NES.mp3")
+    carImage = love.graphics.newImage("resources/images/car.png")
+    victory = love.audio
+                  .newSource("resources/sound/Jingle_Win_01.mp3", "static")
+    failure = love.audio.newSource("resources/sound/Jingle_Lose_01.mp3",
+                                   "static")
+    skid = love.audio.newSource("resources/sound/skid.mp3", "static")
+    music = love.audio.newSource("resources/sound/Sound Way NES.mp3", "static")
 
     imageWidth = playerImage:getWidth()
     imageHeight = playerImage:getHeight()
 
-    local playerFrames =
-        spriteSheet.SpriteSheet:new(
-        friendImage:getWidth(),
-        friendImage:getHeight(),
-        frameSide,
-        16,
-        "columnsFirst"
-    )
-    local friendFrames =
-        spriteSheet.SpriteSheet:new(
-        friendImage:getWidth(),
-        friendImage:getHeight(),
-        frameSide,
-        16,
-        "columnsFirst"
-    )
+    local playerFrames = spriteSheet.SpriteSheet:new(friendImage:getWidth(),
+                                                     friendImage:getHeight(),
+                                                     frameSide, 16,
+                                                     "columnsFirst")
+    local friendFrames = spriteSheet.SpriteSheet:new(friendImage:getWidth(),
+                                                     friendImage:getHeight(),
+                                                     frameSide, 16,
+                                                     "columnsFirst")
 
     local playerAnimations = {
         standing = animation.Animation:new(0, 2, 2),
@@ -71,28 +63,12 @@ function love.load()
     }
 
     objects = {}
-    player =
-        character.Character:new(
-        playerStartX,
-        playerStartY,
-        40,
-        40,
-        playerSpeed,
-        playerAnimations,
-        playerFrames,
-        playerImage
-    )
-    friend =
-        character.Character:new(
-        friendStartX,
-        friendStartY,
-        40,
-        40,
-        friendSpeed,
-        friendAnimations,
-        friendFrames,
-        friendImage
-    )
+    player = character.Character:new(playerStartX, playerStartY, 40, 40,
+                                     playerSpeed, playerAnimations,
+                                     playerFrames, playerImage)
+    friend = character.Character:new(friendStartX, friendStartY, 40, 40,
+                                     friendSpeed, friendAnimations,
+                                     friendFrames, friendImage)
     car = {xPos = walkingScreenWidth, yPos = screenHeight, image = carImage}
     table.insert(objects, player)
     table.insert(objects, friend)
@@ -106,21 +82,24 @@ end
 
 function startGame()
     music:setVolume(0.5)
-    love.audio.rewind(music)
+    love.audio.stop(music)
     love.audio.play(music)
     gameState = "Running"
     conversation.reset("Get ready!")
     player:reset()
     friend:reset()
-    car = {xPos = walkingScreenWidth + carWidth, yPos = screenHeight, image = carImage}
+    car = {
+        xPos = walkingScreenWidth + carWidth,
+        yPos = screenHeight,
+        image = carImage
+    }
 
-    screens = gameLevel.generateScreens(numScreens, walkingScreenWidth, screenHeight)
+    screens = gameLevel.generateScreens(numScreens, walkingScreenWidth,
+                                        screenHeight)
 end
 
 function love.draw()
-    for i = 1, table.getn(screens) do
-        screens[i]:draw()
-    end
+    for i = 1, table.getn(screens) do screens[i]:draw() end
 
     if car.flipped then
         love.graphics.draw(car.image, car.xPos, car.yPos, 0, 1.4, 1.4)
@@ -173,10 +152,8 @@ function updateCharacter(char, dt, getDirections)
     char.dy = -scrollSpeed
     local directions = getDirections()
 
-    local up,
-        left,
-        down,
-        right = directions["up"], directions["left"], directions["down"], directions["right"]
+    local up, left, down, right = directions["up"], directions["left"],
+                                  directions["down"], directions["right"]
     char.animations[char.currentAnimation]:update(dt)
 
     if not (up or left or down or right) then
@@ -187,9 +164,7 @@ function updateCharacter(char, dt, getDirections)
     char:setAnimation("walking")
 
     local speed = char.speed
-    if ((down or up) and (left or right)) then
-        speed = speed / math.sqrt(2)
-    end
+    if ((down or up) and (left or right)) then speed = speed / math.sqrt(2) end
 
     if down and char.yPos < screenHeight - char.height then
         char.dy = char.dy + speed
@@ -227,7 +202,8 @@ function moveCharacter(char, dt)
                 local barrier = screens[j]:getBarrier()
                 if barrier then
                     if collisions.checkOverlap(char, barrier) then
-                        collisions.resolveCollision(char, barrier, scrollSpeed, dt)
+                        collisions.resolveCollision(char, barrier, scrollSpeed,
+                                                    dt)
                         break
                     end
                 else
@@ -260,10 +236,8 @@ function getFriendDirections()
 
     if friend.screenLayout == "leftToRight" and friend.xPos < friendStartX then
         right = true
-    elseif
-        friend.screenLayout == "rightToLeft" and
-            friend.xPos > 1 / 4 * walkingScreenWidth + frameSide
-     then
+    elseif friend.screenLayout == "rightToLeft" and friend.xPos > 1 / 4 *
+        walkingScreenWidth + frameSide then
         left = true
     end
 
@@ -291,16 +265,10 @@ function restart()
     restarting = true
 end
 
-function updateEnding(dt)
-    if gameState == "NearMiss" then
-        updateCar(dt)
-    end
-end
+function updateEnding(dt) if gameState == "NearMiss" then updateCar(dt) end end
 
 function positionCar()
-    if string.find(player.screenLayout, "left") then
-        car.xPos = -carWidth
-    end
+    if string.find(player.screenLayout, "left") then car.xPos = -carWidth end
 end
 
 function updateCar(dt)
@@ -322,13 +290,9 @@ function updateCar(dt)
     end
 end
 
-function onNewTopic()
-    friend:showBubble("speech")
-end
+function onNewTopic() friend:showBubble("speech") end
 
-function onAnswer()
-    player:showBubble("speech")
-end
+function onAnswer() player:showBubble("speech") end
 
 function onLose()
     gameState = "WrongAnswer"
